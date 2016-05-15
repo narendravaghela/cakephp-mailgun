@@ -1,26 +1,31 @@
 <?php
 
 /**
- * Mailgun Transport
- *
- * Copyright 2016, Narendra Vaghela
+ * Mailgun plugin for CakePHP 3
+ * Copyright (c) Narendra Vaghela (http://www.narendravaghela.com)
  *
  * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.md
  * Redistributions of files must retain the above copyright notice.
  *
- * @author		Narendra Vaghela
- * @copyright           Copyright (c) Narendra Vaghela (http://www.narendravaghela.com)
- * @since		1.0.0
- * @license		http://www.opensource.org/licenses/mit-license.php MIT License
+ * @copyright     Narendra Vaghela (http://www.narendravaghela.com)
+ * @link          https://github.com/narendravaghela/cakephp-mailgun
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
 namespace MailgunEmail\Mailer\Transport;
 
 use Cake\Mailer\AbstractTransport;
 use Cake\Mailer\Email;
-use Mailgun\Mailgun;
 use Http\Adapter\Guzzle6\Client;
+use Mailgun\Mailgun;
+use MailgunEmail\Mailer\Exception\MissingCredentialsException;
 
+/**
+ * Mailgun Transport class
+ *
+ * Send email using Mailgun
+ */
 class MailgunTransport extends AbstractTransport
 {
 
@@ -45,9 +50,9 @@ class MailgunTransport extends AbstractTransport
     /**
      * The response of the last sent email.
      *
-     * @var array
+     * @var object
      */
-    protected $_lastResponse = [];
+    protected $_lastResponse;
 
     /**
      * CakeEmail headers
@@ -71,26 +76,29 @@ class MailgunTransport extends AbstractTransport
 
     protected function _sendMessage()
     {
-        $this->_lastResponse = [];
+        $this->_lastResponse = null;
         $response = $this->_mgObject->sendMessage($this->config('domain'), $this->_mailgunParams);
+        $this->_lastResponse = $response;
         return $response;
     }
 
     protected function _buildMailgunMessage($email)
     {
+        xdebug_break();
         $message = [];
         $this->_headers = $this->_prepareMessageHeaders($email);
         $message['from'] = $this->_headers['From'];
         $message['to'] = $this->_headers['To'];
         $message['subject'] = $this->_headers['Subject'];
-        $message['html'] = $email->message();
+        $message['html'] = $email->message(Email::MESSAGE_HTML);
+        $message['text'] = $email->message(Email::MESSAGE_TEXT);
         return $message;
     }
 
     /**
      * Prepares the message headers.
      *
-     * @param \Cake\Mailer\Email $email Email instance
+     * @param Email $email Email instance
      * @return array
      */
     protected function _prepareMessageHeaders($email)
@@ -100,6 +108,12 @@ class MailgunTransport extends AbstractTransport
 
     protected function _setMgObject()
     {
+        if (empty($this->config('apiKey'))) {
+            throw new MissingCredentialsException(['API Key']);
+        }
+        if (empty($this->config('apiKey'))) {
+            throw new MissingCredentialsException(['sending domain']);
+        }
         if (!is_a($this->_mgObject, 'Mailgun')) {
             $client = new Client();
             $this->_mgObject = new Mailgun($this->config('apiKey'), $client);
