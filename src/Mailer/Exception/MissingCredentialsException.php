@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mailgun plugin for CakePHP 3
  * Copyright (c) Narendra Vaghela (http://www.narendravaghela.com)
@@ -11,6 +12,7 @@
  * @link          https://github.com/narendravaghela/cakephp-mailgun
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace MailgunEmail\Mailer\Exception;
 
 use Cake\Core\Exception\Exception;
@@ -26,11 +28,4 @@ class MissingCredentialsException extends Exception
      */
     protected $_messageTemplate = 'Mailgun %s is not set.';
 
-    /**
-     * {@inheritDoc}
-     */
-//    public function __construct($message, $code = 404)
-//    {
-//        parent::__construct($message, $code);
-//    }
 }
