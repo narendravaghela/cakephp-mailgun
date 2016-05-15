@@ -1,0 +1,34 @@
+{
+    "name": "narendravaghela/cakephp-mailgun",
+    "description": "MailgunEmail plugin for CakePHP",
+    "license": "MIT",
+    "type": "cakephp-plugin",
+    "keywords": ["cakephp", "mailgun", "email"],
+	"homepage": "https://github.com/narendravaghela/cakephp-mailgun",
+    "authors": [
+        {
+            "name": "Narendra Vaghela",
+            "homepage": "http://www.narendravaghela.com",
+            "role": "Author"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.9",
+        "cakephp/cakephp": ">=3.0.0 <4.0",
+    },
+    "require-dev": {
+        "cakephp/cakephp-codesniffer": "dev-master",
+        "phpunit/phpunit": "4.1.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "MailgunEmail\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MailgunEmail\\Test\\": "tests",
+            "Cake\\Test\\": "./vendor/cakephp/cakephp/tests"
+        }
+    }
+}
