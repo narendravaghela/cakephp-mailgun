@@ -84,7 +84,6 @@ class MailgunTransport extends AbstractTransport
 
     protected function _buildMailgunMessage($email)
     {
-        xdebug_break();
         $message = [];
         $this->_headers = $this->_prepareMessageHeaders($email);
         $message['from'] = $this->_headers['From'];
