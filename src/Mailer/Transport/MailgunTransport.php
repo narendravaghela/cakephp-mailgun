@@ -36,7 +36,7 @@ class MailgunTransport extends AbstractTransport
      */
     protected $_defaultConfig = [
         'apiKey' => null,
-        'domain' => 'example.com',
+        'domain' => null,
         'ssl' => true,
     ];
 
@@ -110,7 +110,7 @@ class MailgunTransport extends AbstractTransport
         if (empty($this->config('apiKey'))) {
             throw new MissingCredentialsException(['API Key']);
         }
-        if (empty($this->config('apiKey'))) {
+        if (empty($this->config('domain'))) {
             throw new MissingCredentialsException(['sending domain']);
         }
         if (!is_a($this->_mgObject, 'Mailgun')) {
