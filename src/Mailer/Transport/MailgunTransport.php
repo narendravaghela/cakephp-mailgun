@@ -24,7 +24,7 @@ use MailgunEmail\Mailer\Exception\MissingCredentialsException;
 /**
  * Mailgun Transport class
  *
- * Send email using Mailgun
+ * Send email using Mailgun SDK
  */
 class MailgunTransport extends AbstractTransport
 {
@@ -41,11 +41,94 @@ class MailgunTransport extends AbstractTransport
     ];
 
     /**
+     * CakePHP Email object
+     * 
+     * @var object Cake\Mailer\Email 
+     */
+    protected $_cakeEmail;
+
+    /**
      * Mailgun Class Object
      *
      * @var object Mailgun Class Object
      */
     protected $_mgObject;
+
+    /**
+     * Mailgun API version
+     * 
+     * @var string
+     */
+    protected $_apiVersion = 'v3';
+
+    /**
+     * Mapping of Mailgun parameters with Email
+     * 
+     * @var array
+     */
+    protected $_defaultParamsMap = [
+        'From' => 'from',
+        'Sender' => 'sender',
+        'Reply-To' => 'h:Reply-To',
+        'Disposition-Notification-To' => 'h:Disposition-Notification-To',
+        'Return-Path' => 'h:Return-Path',
+        'To' => 'to',
+        'Cc' => 'cc',
+        'Bcc' => 'bcc',
+        'Subject' => 'subject'
+    ];
+
+    /**
+     * Additional parameters for message
+     * 
+     * @var array
+     */
+    protected $_additionalParams = [
+        'o:tag', // Tag string. See https://documentation.mailgun.com/user_manual.html#tagging
+        'o:campaign', //Id of the campaign the message belongs to
+        'o:dkim', // Enables/disables DKIM signatures on per-message basis. Possible values: yes or no
+        'o:deliverytime', // Desired time of delivery. See https://documentation.mailgun.com/api-intro.html#date-format
+        'o:testmode', // Enables sending in test mode. See https://documentation.mailgun.com/user_manual.html#manual-testmode
+        'o:tracking', // Toggles tracking on a per-message basis. Possible values: yes or no
+        'o:tracking-clicks', // Toggles clicks tracking on a per-message basis. Possible values: yes, no or htmlonly
+        'o:tracking-opens', // Toggles opens tracking on a per-message basis. Possible values: yes or no
+        'o:require-tls', // Send message over a TLS connection. Possible values: true or false. Default false.
+        'o:skip-verification' // Whether the certificate and hostname will be verified or not. Possible values: true or false. Default false.
+    ];
+
+    /**
+     * Header prefix
+     * 
+     * v:prefix followed by an arbitrary value allows to append a custom 
+     * MIME header to the message 
+     * 
+     * @var string
+     */
+    protected $_customHeaderPrefix = 'h:';
+
+    /**
+     * Variable prefix
+     * 
+     * v:prefix followed by an arbitrary name allows to attach a custom 
+     * JSON data to the message
+     * 
+     * @var string
+     */
+    protected $_customVariablePrefix = 'v:';
+
+    /**
+     * Mailgun parameters
+     * 
+     * @var array
+     */
+    protected $_params = [];
+
+    /**
+     * Email attachments
+     * 
+     * @var array
+     */
+    protected $_attachments = [];
 
     /**
      * The response of the last sent email.
@@ -55,71 +138,148 @@ class MailgunTransport extends AbstractTransport
     protected $_lastResponse;
 
     /**
-     * CakeEmail headers
-     *
-     * @var array
-     */
-    protected $_headers;
-
-    /**
      * Send mail
      *
      * @param Email $email Cake Email
-     * @return array
+     * @return mixed Mailgun result
      */
     public function send(Email $email)
     {
         $this->_setMgObject();
-        $this->_mailgunParams = $this->_buildMailgunMessage($email);
-        $this->_sendMessage();
+
+        $this->_cakeEmail = $email;
+
+        $this->_headers = $this->_getEmailHeaders();
+        foreach ($this->_defaultParamsMap as $cakeParam => $mgParam) {
+            if (isset($this->_defaultParamsMap[$cakeParam]) && !empty($this->_headers[$cakeParam])) {
+                $this->_params[$mgParam] = $this->_headers[$cakeParam];
+            } elseif (!empty($this->_headers[$cakeParam])) {
+                $this->_params[$this->_customHeaderPrefix . $cakeParam] = $this->_headers[$cakeParam];
+            }
+        }
+
+        $this->_additionalHeaders = $this->_getAdditionalEmailHeaders();
+        if (!empty($this->_additionalHeaders)) {
+            foreach ($this->_additionalHeaders as $header => $value) {
+                if (in_array($header, $this->_additionalParams) && !empty($value)) {
+                    $this->_params[$header] = $value;
+                } elseif (0 === strpos($header, $this->_customVariablePrefix) && !empty($value)) {
+                    $decoded = json_decode($value);
+                    if (!empty($decoded) && json_last_error() == JSON_ERROR_NONE) {
+                        $this->_params[$header] = $value;
+                    }
+                } elseif (!empty($value)) {
+                    $this->_params[$this->_customHeaderPrefix . $header] = $value;
+                }
+            }
+        }
+
+        $emailFormat = $this->_cakeEmail->emailFormat();
+
+        $this->_params['html'] = $this->_cakeEmail->message(Email::MESSAGE_HTML);
+        
+        if ('both' == $emailFormat || 'text' == $emailFormat) {
+            $this->_params['text'] = $this->_cakeEmail->message(Email::MESSAGE_TEXT);
+        }
+
+        $attachments = $this->_processAttachments();
+        if (!empty($attachments)) {
+            $this->_attachments = $attachments;
+        }
+
+        return $this->_sendMessage();
     }
 
+    /**
+     * Sends mail using Mailgun
+     * 
+     * @return mixed Mailgun response
+     */
     protected function _sendMessage()
     {
         $this->_lastResponse = null;
-        $response = $this->_mgObject->sendMessage($this->config('domain'), $this->_mailgunParams);
+        $response = $this->_mgObject->sendMessage($this->config('domain'), $this->_params, $this->_attachments);
+        $this->_reset();
         $this->_lastResponse = $response;
         return $response;
     }
 
-    protected function _buildMailgunMessage($email)
+    /**
+     * Returns basic headers.
+     *
+     * @return array
+     */
+    protected function _getEmailHeaders()
     {
-        $message = [];
-        $this->_headers = $this->_prepareMessageHeaders($email);
-        $message['from'] = $this->_headers['From'];
-        $message['to'] = $this->_headers['To'];
-        $message['subject'] = $this->_headers['Subject'];
-        $message['html'] = $email->message(Email::MESSAGE_HTML);
-        $message['text'] = $email->message(Email::MESSAGE_TEXT);
-        return $message;
+        return $this->_cakeEmail->getHeaders(['from', 'sender', 'replyTo', 'readReceipt', 'to', 'cc', 'subject', 'returnPath']);
     }
 
     /**
-     * Prepares the message headers.
+     * Returns additional headers set via Email::setHeaders().
      *
-     * @param Email $email Email instance
      * @return array
      */
-    protected function _prepareMessageHeaders($email)
+    protected function _getAdditionalEmailHeaders()
     {
-        return $email->getHeaders(['from', 'sender', 'replyTo', 'readReceipt', 'to', 'cc', 'subject', 'returnPath']);
+        return $this->_cakeEmail->getHeaders(['_headers']);
     }
 
+    /**
+     * Prepares attachments
+     * 
+     * @return array
+     */
+    protected function _processAttachments()
+    {
+        $attachments = array();
+
+        foreach ($this->_cakeEmail->attachments() as $name => $file) {
+            $attachments[] = ['filePath' => '@' . $file['file'], 'remoteName' => $name];
+        }
+
+        return $attachments;
+    }
+
+    /**
+     * Sets Mailgun object
+     * 
+     * @throws MissingCredentialsException If API key or Sending Domain is missing
+     */
     protected function _setMgObject()
     {
         if (empty($this->config('apiKey'))) {
             throw new MissingCredentialsException(['API Key']);
         }
+
         if (empty($this->config('domain'))) {
             throw new MissingCredentialsException(['sending domain']);
         }
+
         if (!is_a($this->_mgObject, 'Mailgun')) {
             $client = new Client();
             $this->_mgObject = new Mailgun($this->config('apiKey'), $client);
         }
+
         if (!$this->config('ssl')) {
             $this->_mgObject->setSslEnabled(false);
         }
-        $this->_mgObject->setApiVersion('v3');
+
+        if ($this->config('apiVersion')) {
+            $this->_mgObject->setApiVersion($this->config('apiVersion'));
+        } else {
+            $this->_mgObject->setApiVersion($this->_apiVersion);
+        }
+    }
+
+    /**
+     * Resets the variables to free memory
+     * 
+     * @return void
+     */
+    protected function _reset()
+    {
+        $this->_mgObject = null;
+        $this->_params = [];
+        $this->_attachments = [];
     }
 }
