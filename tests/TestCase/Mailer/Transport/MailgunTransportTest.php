@@ -34,6 +34,7 @@ class MailgunTransportTest extends TestCase
         $this->validConfig = [
             'apiKey' => 'My-Super-Awesome-API-Key',
             'domain' => 'test.mailgun.org',
+            'apiVersion' => 'v3',
             'ssl' => false,
             'isTest' => true
         ];
@@ -44,14 +45,39 @@ class MailgunTransportTest extends TestCase
     }
 
     /**
-     * Test configuration
+     * Test missing api key exception
      *
      * @return void
      */
-    public function testInvalidConfig()
+    public function testMissingApiKey()
     {
         $this->setExpectedException('MailgunEmail\Mailer\Exception\MissingCredentialsException');
-        $this->MailgunTransport->config($this->invalidConfig);
+        $this->MailgunTransport->config([
+            'apiKey' => 'My-Super-Awesome-API-Key',
+            'domain' => ''
+        ]);
+
+        $email = new Email();
+        $email->transport($this->MailgunTransport);
+        $email->from(['sender@test.mailgun.org' => 'Mailgun Test'])
+                ->to('test@test.mailgun.org')
+                ->subject('This is test subject')
+                ->emailFormat('text')
+                ->send('Testing Maingun');
+    }
+
+    /**
+     * Test missing domain exception
+     *
+     * @return void
+     */
+    public function testMissingDomain()
+    {
+        $this->setExpectedException('MailgunEmail\Mailer\Exception\MissingCredentialsException');
+        $this->MailgunTransport->config([
+            'apiKey' => '',
+            'domain' => ''
+        ]);
 
         $email = new Email();
         $email->transport($this->MailgunTransport);
