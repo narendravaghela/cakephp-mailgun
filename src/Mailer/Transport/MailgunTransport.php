@@ -19,6 +19,7 @@ use Cake\Mailer\AbstractTransport;
 use Cake\Mailer\Email;
 use Http\Adapter\Guzzle6\Client;
 use Mailgun\Mailgun;
+use Mailgun\Tests\Mock\Mailgun as MailgunTest;
 use MailgunEmail\Mailer\Exception\MissingCredentialsException;
 
 /**
@@ -38,6 +39,7 @@ class MailgunTransport extends AbstractTransport
         'apiKey' => null,
         'domain' => null,
         'ssl' => true,
+        'isTest' => false // for Unit Test only
     ];
 
     /**
@@ -177,7 +179,7 @@ class MailgunTransport extends AbstractTransport
         $emailFormat = $this->_cakeEmail->emailFormat();
 
         $this->_params['html'] = $this->_cakeEmail->message(Email::MESSAGE_HTML);
-        
+
         if ('both' == $emailFormat || 'text' == $emailFormat) {
             $this->_params['text'] = $this->_cakeEmail->message(Email::MESSAGE_TEXT);
         }
@@ -256,8 +258,12 @@ class MailgunTransport extends AbstractTransport
         }
 
         if (!is_a($this->_mgObject, 'Mailgun')) {
-            $client = new Client();
-            $this->_mgObject = new Mailgun($this->config('apiKey'), $client);
+            if (!$this->config('isTest')) {
+                $client = new Client();
+                $this->_mgObject = new Mailgun($this->config('apiKey'), $client);
+            } else {
+                $this->_mgObject = new MailgunTest($this->config('apiKey'));
+            }
         }
 
         if (!$this->config('ssl')) {
