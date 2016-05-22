@@ -1,8 +1,7 @@
 <?php
-
 /**
  * MailgunTransportTest file
- *  
+ *
  * Copyright (c) Narendra Vaghela (http://www.narendravaghela.com)
  *
  * Licensed under The MIT License
@@ -46,7 +45,7 @@ class MailgunTransportTest extends TestCase
 
     /**
      * Test configuration
-     * 
+     *
      * @return void
      */
     public function testInvalidConfig()
@@ -65,7 +64,7 @@ class MailgunTransportTest extends TestCase
 
     /**
      * Test required fields
-     * 
+     *
      * @return void
      */
     public function testMissingRequiredFields()
@@ -83,7 +82,7 @@ class MailgunTransportTest extends TestCase
 
     /**
      * Test send
-     * 
+     *
      * @return void
      */
     public function testSend()
@@ -102,7 +101,7 @@ class MailgunTransportTest extends TestCase
 
     /**
      * Test attachments
-     * 
+     *
      * @return void
      */
     public function testAttachments()

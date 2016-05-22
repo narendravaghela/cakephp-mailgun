@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Mailgun plugin for CakePHP 3
  * Copyright (c) Narendra Vaghela (http://www.narendravaghela.com)
@@ -18,9 +17,9 @@ namespace MailgunEmail\Mailer\Transport;
 use Cake\Mailer\AbstractTransport;
 use Cake\Mailer\Email;
 use Http\Adapter\Guzzle6\Client;
+use MailgunEmail\Mailer\Exception\MissingCredentialsException;
 use Mailgun\Mailgun;
 use Mailgun\Tests\Mock\Mailgun as MailgunTest;
-use MailgunEmail\Mailer\Exception\MissingCredentialsException;
 
 /**
  * Mailgun Transport class
@@ -44,8 +43,8 @@ class MailgunTransport extends AbstractTransport
 
     /**
      * CakePHP Email object
-     * 
-     * @var object Cake\Mailer\Email 
+     *
+     * @var object Cake\Mailer\Email
      */
     protected $_cakeEmail;
 
@@ -58,14 +57,14 @@ class MailgunTransport extends AbstractTransport
 
     /**
      * Mailgun API version
-     * 
+     *
      * @var string
      */
     protected $_apiVersion = 'v3';
 
     /**
      * Mapping of Mailgun parameters with Email
-     * 
+     *
      * @var array
      */
     protected $_defaultParamsMap = [
@@ -82,7 +81,7 @@ class MailgunTransport extends AbstractTransport
 
     /**
      * Additional parameters for message
-     * 
+     *
      * @var array
      */
     protected $_additionalParams = [
@@ -100,34 +99,34 @@ class MailgunTransport extends AbstractTransport
 
     /**
      * Header prefix
-     * 
-     * v:prefix followed by an arbitrary value allows to append a custom 
-     * MIME header to the message 
-     * 
+     *
+     * v:prefix followed by an arbitrary value allows to append a custom
+     * MIME header to the message
+     *
      * @var string
      */
     protected $_customHeaderPrefix = 'h:';
 
     /**
      * Variable prefix
-     * 
-     * v:prefix followed by an arbitrary name allows to attach a custom 
+     *
+     * v:prefix followed by an arbitrary name allows to attach a custom
      * JSON data to the message
-     * 
+     *
      * @var string
      */
     protected $_customVariablePrefix = 'v:';
 
     /**
      * Mailgun parameters
-     * 
+     *
      * @var array
      */
     protected $_params = [];
 
     /**
      * Email attachments
-     * 
+     *
      * @var array
      */
     protected $_attachments = [];
@@ -194,7 +193,7 @@ class MailgunTransport extends AbstractTransport
 
     /**
      * Sends mail using Mailgun
-     * 
+     *
      * @return mixed Mailgun response
      */
     protected function _sendMessage()
@@ -228,12 +227,12 @@ class MailgunTransport extends AbstractTransport
 
     /**
      * Prepares attachments
-     * 
+     *
      * @return array
      */
     protected function _processAttachments()
     {
-        $attachments = array();
+        $attachments = [];
 
         foreach ($this->_cakeEmail->attachments() as $name => $file) {
             $attachments[] = ['filePath' => '@' . $file['file'], 'remoteName' => $name];
@@ -244,7 +243,7 @@ class MailgunTransport extends AbstractTransport
 
     /**
      * Sets Mailgun object
-     * 
+     *
      * @throws MissingCredentialsException If API key or Sending Domain is missing
      */
     protected function _setMgObject()
@@ -279,7 +278,7 @@ class MailgunTransport extends AbstractTransport
 
     /**
      * Resets the variables to free memory
-     * 
+     *
      * @return void
      */
     protected function _reset()

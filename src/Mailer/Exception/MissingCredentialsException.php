@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Mailgun plugin for CakePHP 3
  * Copyright (c) Narendra Vaghela (http://www.narendravaghela.com)
@@ -27,5 +26,4 @@ class MissingCredentialsException extends Exception
      * {@inheritDoc}
      */
     protected $_messageTemplate = 'Mailgun %s is not set.';
-
 }
