@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/narendravaghela/cakephp-mailgun.svg?branch=master)](https://travis-ci.org/narendravaghela/cakephp-mailgun)
 [![codecov.io](https://codecov.io/github/narendravaghela/cakephp-mailgun/coverage.svg?branch=master)](https://codecov.io/github/narendravaghela/cakephp-mailgun?branch=master)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 
 This plugin provides email delivery using [Mailgun](https://mailgun.com).
 
