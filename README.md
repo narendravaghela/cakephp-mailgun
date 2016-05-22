@@ -75,7 +75,7 @@ $result = $email->from(['foo@example.com' => 'Example Site'])
   ->emailFormat('both')
   ->addHeaders(['o:tag' => 'testing'])
   ->addHeaders(['o:deliverytime' => strtotime('+1 Min')])
-  ->addHeaders(['v:my-custom-data' => json_encode(['max' => 'testing'])])
+  ->addHeaders(['v:my-custom-data' => json_encode(['foo' => 'bar'])])
   ->readReceipt('admin@example.com')
   ->returnPath('bounce@example.com')
   ->attachments([
