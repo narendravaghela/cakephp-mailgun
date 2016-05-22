@@ -31,8 +31,62 @@ $ bin/cake plugin load MailgunEmail
 
 ## Setup
 
+Set your Mailgun credentials in `EmailTransport` settings in app.php
+
+```php
+'EmailTransport' => [
+...
+  'mailgun' => [
+      'className' => 'MailgunEmail.Mailgun',
+      'apiKey' => 'key-123456789123456789', // your api key
+      'domain' => 'test.mailgun.org' // your sending domain
+  ]
+]
+```
+
+And create new delivery profile for mailgun in `Email` settings.
+
+```php
+'Email' => [
+    'default' => [
+        'transport' => 'default',
+        'from' => 'you@localhost',
+        //'charset' => 'utf-8',
+        //'headerCharset' => 'utf-8',
+    ],
+    'mailgun' => [
+        'transport' => 'mailgun'
+    ]
+]
+```
+
 ## Usage
+
+You can now simply use the CakePHP `Email` to send an email via Mailgun.
+
+```php
+$email = new Email('mailgun');
+$result = $email->from(['foo@example.com' => 'Example Site'])
+  ->to('bar@example.com')
+  ->subject('Welcome to CakePHP')
+  ->template('welcome')
+  ->viewVars(['foo' => 'Bar'])
+  ->emailFormat('both')
+  ->addHeaders(['o:tag' => 'testing'])
+  ->addHeaders(['o:deliverytime' => strtotime('+1 Min')])
+  ->addHeaders(['v:my-custom-data' => json_encode(['max' => 'testing'])])
+  ->readReceipt('admin@example.com')
+  ->returnPath('bounce@example.com')
+  ->attachments([
+      'cake_icon1.png' => Configure::read('App.imageBaseUrl') . 'cake.icon.png',
+      'cake_icon2.png' => ['file' => Configure::read('App.imageBaseUrl') . 'cake.icon.png'],
+      WWW_ROOT . 'favicon.ico'
+  ])
+  ->send('Your email content here');
+```
+
+That is it.
 
 ## Reporting Issues
 
-If you have a problem with RememberMe, please open an issue on [GitHub](https://github.com/narendravaghela/cakephp-mailgun/issues).
+If you have a problem with this plugin or any bug, please open an issue on [GitHub](https://github.com/narendravaghela/cakephp-mailgun/issues).
