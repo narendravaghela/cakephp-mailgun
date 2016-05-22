@@ -121,4 +121,24 @@ class MailgunTransportTest extends TestCase
                 ->send('Testing Maingun');
         $this->assertEquals("test.mailgun.org/messages", $result->http_endpoint_url);
     }
+
+    /**
+     * Test additional headers
+     *
+     * @return void
+     */
+    public function testAdditionalHeaders()
+    {
+        $this->MailgunTransport->config($this->validConfig);
+
+        $email = new Email();
+        $email->transport($this->MailgunTransport);
+        $result = $email->from('sender@test.mailgun.org')
+                ->to('test@test.mailgun.org')
+                ->subject('This is test subject')
+                ->addHeaders(['o:tag' => 'testing', 'o:tracking' => 'yes'])
+                ->addHeaders(['v:custom-data' => json_encode(['foo' => 'bar'])])
+                ->send('Testing Maingun');
+        $this->assertEquals("test.mailgun.org/messages", $result->http_endpoint_url);
+    }
 }
