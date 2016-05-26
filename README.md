@@ -1,4 +1,4 @@
-# MailgunEmail plugin for CakePHP
+# Mailgun plugin for CakePHP
 
 [![Build Status](https://travis-ci.org/narendravaghela/cakephp-mailgun.svg?branch=master)](https://travis-ci.org/narendravaghela/cakephp-mailgun)
 [![codecov.io](https://codecov.io/github/narendravaghela/cakephp-mailgun/coverage.svg?branch=master)](https://codecov.io/github/narendravaghela/cakephp-mailgun?branch=master)
