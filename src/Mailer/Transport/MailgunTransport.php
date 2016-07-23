@@ -202,6 +202,7 @@ class MailgunTransport extends AbstractTransport
         $response = $this->_mgObject->sendMessage($this->config('domain'), $this->_params, $this->_attachments);
         $this->_reset();
         $this->_lastResponse = $response;
+
         return $response;
     }
 
