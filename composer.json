@@ -32,7 +32,7 @@
         "psr-4": {
             "MailgunEmail\\Test\\": "tests",
             "Cake\\Test\\": "./vendor/cakephp/cakephp/tests",
-            "Mailgun\\Test\\": "./vendor/mailgun/mailgun-php/tests"
+            "Mailgun\\Tests\\": "./vendor/mailgun/mailgun-php/tests"
         }
     }
 }
