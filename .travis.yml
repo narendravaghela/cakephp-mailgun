@@ -22,6 +22,7 @@ matrix:
 install:
   - composer self-update
   - composer install --prefer-dist
+  - composer dump-autoload
 
 before_script:
   - phpenv rehash
