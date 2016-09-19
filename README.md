@@ -45,6 +45,12 @@ Set your Mailgun credentials in `EmailTransport` settings in app.php
 ]
 ```
 
+If you face an SSL certificate error, please follow below steps:
+
+1. Open http://curl.haxx.se/ca/cacert.pem  
+2. Copy the entire page and save it as a "cacert.pem"  
+3. Open your php.ini file and insert or update the following line: curl.cainfo = "[pathtofile]\cacert.pem"  
+
 And create new delivery profile for mailgun in `Email` settings.
 
 ```php
