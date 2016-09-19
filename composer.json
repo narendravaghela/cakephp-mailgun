@@ -24,8 +24,7 @@
     },
     "autoload": {
         "psr-4": {
-            "MailgunEmail\\": "src",
-            "Mailgun\\": "./vendor/mailgun/mailgun-php/src"
+            "MailgunEmail\\": "src"
         }
     },
     "autoload-dev": {
