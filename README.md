@@ -6,7 +6,7 @@
 [![Latest Stable Version](https://poser.pugx.org/narendravaghela/cakephp-mailgun/v/stable)](https://packagist.org/packages/narendravaghela/cakephp-mailgun)
 [![Total Downloads](https://poser.pugx.org/narendravaghela/cakephp-mailgun/downloads)](https://packagist.org/packages/narendravaghela/cakephp-mailgun)
 
-This plugin provides email delivery using [Mailgun](https://mailgun.com).
+This plugin provides email delivery using [Mailgun](https://mailgun.com). See this [post](http://blog.narendravaghela.com/cakephp-send-transactional-emails-using-mailgun/) for detailed examples.
 
 ## Requirements
 
