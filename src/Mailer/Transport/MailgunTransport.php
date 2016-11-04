@@ -100,7 +100,7 @@ class MailgunTransport extends AbstractTransport
     /**
      * Header prefix
      *
-     * v:prefix followed by an arbitrary value allows to append a custom
+     * h:prefix followed by an arbitrary value allows to append a custom
      * MIME header to the message
      *
      * @var string
@@ -116,6 +116,16 @@ class MailgunTransport extends AbstractTransport
      * @var string
      */
     protected $_customVariablePrefix = 'v:';
+
+    /**
+     * Extra variable prefix
+     *
+     * ev:prefix followed by an arbitrary value allows to append an extra
+     * variable to the message
+     *
+     * @var string
+     */
+    protected $_extraVariablePrefix = 'ev:';
 
     /**
      * Mailgun parameters
@@ -171,6 +181,8 @@ class MailgunTransport extends AbstractTransport
                     }
                 } elseif (0 === strpos($header, $this->_customHeaderPrefix) && !empty($value)) {
                     $this->_params[$header] = $value;
+                } elseif (0 === strpos($header, $this->_extraVariablePrefix) && !empty($value)) {
+                    $this->_params[str_replace($this->_extraVariablePrefix, '', $header)] = $value;
                 } elseif (!empty($value)) {
                     $this->_params[$this->_customHeaderPrefix . $header] = $value;
                 }
