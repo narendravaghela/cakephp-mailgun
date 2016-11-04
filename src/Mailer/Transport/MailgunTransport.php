@@ -169,6 +169,8 @@ class MailgunTransport extends AbstractTransport
                     if (!empty($decoded) && json_last_error() == JSON_ERROR_NONE) {
                         $this->_params[$header] = $value;
                     }
+                } elseif (0 === strpos($header, $this->_customHeaderPrefix) && !empty($value)) {
+                    $this->_params[$header] = $value;
                 } elseif (!empty($value)) {
                     $this->_params[$this->_customHeaderPrefix . $header] = $value;
                 }
