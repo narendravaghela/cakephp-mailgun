@@ -215,7 +215,7 @@ class MailgunTransport extends AbstractTransport
      */
     protected function _getEmailHeaders()
     {
-        return $this->_cakeEmail->getHeaders(['from', 'sender', 'replyTo', 'readReceipt', 'to', 'cc', 'subject', 'returnPath']);
+        return $this->_cakeEmail->getHeaders(['from', 'sender', 'replyTo', 'readReceipt', 'to', 'cc', 'bcc', 'subject', 'returnPath']);
     }
 
     /**
