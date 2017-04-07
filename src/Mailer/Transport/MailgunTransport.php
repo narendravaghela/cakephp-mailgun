@@ -199,7 +199,7 @@ class MailgunTransport extends AbstractTransport
 
         $attachments = $this->_processAttachments();
         if (!empty($attachments)) {
-            $this->_attachments = $attachments;
+            $this->_attachments['attachment'] = $attachments;
         }
 
         return $this->_sendMessage();
