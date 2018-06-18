@@ -250,7 +250,7 @@ class MailgunTransport extends AbstractTransport
         $attachments = [];
 
         foreach ($this->_cakeEmail->attachments() as $name => $file) {
-            if (isset($file['contentId'])) {
+            if (!empty($file['contentId'])) {
                 $attachments['inline'][] = ['filePath' => '@' . $file['file'], 'remoteName' => $file['contentId']];
             }
             else {
