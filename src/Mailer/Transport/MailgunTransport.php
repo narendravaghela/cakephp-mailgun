@@ -199,7 +199,7 @@ class MailgunTransport extends AbstractTransport
 
         $attachments = $this->_processAttachments();
         if (!empty($attachments)) {
-            $this->_attachments['attachment'] = $attachments;
+            $this->_attachments = $attachments;
         }
 
         return $this->_sendMessage();
@@ -250,7 +250,12 @@ class MailgunTransport extends AbstractTransport
         $attachments = [];
 
         foreach ($this->_cakeEmail->attachments() as $name => $file) {
-            $attachments[] = ['filePath' => '@' . $file['file'], 'remoteName' => $name];
+            if (!empty($file['contentId'])) {
+                $attachments['inline'][] = ['filePath' => '@' . $file['file'], 'remoteName' => $file['contentId']];
+            }
+            else {
+                $attachments['attachment'][] = ['filePath' => '@' . $file['file'], 'remoteName' => $name];
+            }
         }
 
         return $attachments;
