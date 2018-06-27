@@ -172,10 +172,13 @@ class MailgunTransportTest extends TestCase
      */
     public function testAdditionalHeaders()
     {
-        $this->MailgunTransport->config($this->validConfig);
+        $mailgunTransport = $this->getMockBuilder('MailgunEmail\Mailer\Transport\MailgunTransport')
+            ->setMethods(['_reset'])
+            ->getMock();
+        $mailgunTransport->config($this->validConfig);
 
         $email = new Email();
-        $email->transport($this->MailgunTransport);
+        $email->transport($mailgunTransport);
         $result = $email->from('sender@test.mailgun.org')
                 ->to('test@test.mailgun.org')
                 ->subject('This is test subject')
@@ -183,5 +186,13 @@ class MailgunTransportTest extends TestCase
                 ->addHeaders(['v:custom-data' => json_encode(['foo' => 'bar'])])
                 ->send('Testing Maingun');
         $this->assertEquals("test.mailgun.org/messages", $result->http_endpoint_url);
+
+        $method = new \ReflectionMethod($mailgunTransport, '_getAdditionalEmailHeaders');
+        $method->setAccessible(true);
+
+        $headers = $method->invoke($mailgunTransport);
+        $this->assertArrayHasKey('o:tag', $headers);
+        $this->assertArrayHasKey('o:tracking', $headers);
+        $this->assertArrayHasKey('v:custom-data', $headers);
     }
 }
