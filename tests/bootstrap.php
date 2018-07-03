@@ -80,7 +80,7 @@ Configure::write('Session', [
     'defaults' => 'php'
 ]);
 
-Cache::config([
+Cache::setConfig([
     '_cake_core_' => [
         'engine' => 'File',
         'prefix' => 'cake_core_',
@@ -109,10 +109,10 @@ $config = [
 ];
 
 // Use the test connection for 'mailgun_email' as well.
-ConnectionManager::config('test', $config);
-ConnectionManager::config('mailgun_email', $config);
+ConnectionManager::setConfig('test', $config);
+ConnectionManager::setConfig('mailgun_email', $config);
 
-Log::config([
+Log::setConfig([
     'debug' => [
         'engine' => 'Cake\Log\Engine\FileLog',
         'levels' => ['notice', 'info', 'debug'],
@@ -125,5 +125,3 @@ Log::config([
     ]
 ]);
 Plugin::load('MailgunEmail', ['path' => ROOT]);
-DispatcherFactory::add('Routing');
-DispatcherFactory::add('ControllerFactory');
