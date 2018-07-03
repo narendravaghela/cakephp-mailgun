@@ -1,28 +1,52 @@
 <?php
+/**
+ * Test suite bootstrap.
+ *
+ * This function is used to find the location of CakePHP whether CakePHP
+ * has been installed as a dependency of the plugin, or the plugin is itself
+ * installed as a dependency of an application.
+ */
+
+$findRoot = function ($root) {
+    do {
+        $lastRoot = $root;
+        $root = dirname($root);
+        if (is_dir($root . '/vendor/cakephp/cakephp')) {
+            return $root;
+        }
+    } while ($root !== $lastRoot);
+    throw new Exception("Cannot find the root of the application, unable to run tests");
+};
+$root = $findRoot(__FILE__);
+unset($findRoot);
+chdir($root);
+
+if (!defined('DS')) {
+    define('DS', DIRECTORY_SEPARATOR);
+}
+
+// Path constants to a few helpful things.
+define('ROOT', $root);
+define('CAKE_CORE_INCLUDE_PATH', ROOT . '/vendor/cakephp/cakephp');
+define('CORE_PATH', CAKE_CORE_INCLUDE_PATH . DS);
+define('CAKE', CORE_PATH . 'src' . DS);
+define('TESTS', ROOT . DS . 'tests');
+define('APP', TESTS . DS . 'test_app' . DS);
+define('APP_DIR', 'test_app');
+define('WEBROOT_DIR', 'webroot');
+define('WWW_ROOT', APP . DS . WEBROOT_DIR . DS);
+define('TMP', ROOT . DS . 'tmp' . DS);
+define('CONFIG', ROOT . '/tests/config/');
+define('CACHE', TMP . 'cache' . DS);
+define('LOGS', TMP . 'logs' . DS);
+
+require ROOT . '/vendor/autoload.php';
 
 use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\Core\Plugin;
 use Cake\Datasource\ConnectionManager;
 use Cake\Log\Log;
-use Cake\Routing\DispatcherFactory;
-
-require_once 'vendor/autoload.php';
-
-// Path constants to a few helpful things.
-define('ROOT', dirname(__DIR__) . DS);
-define('CAKE_CORE_INCLUDE_PATH', ROOT . 'vendor' . DS . 'cakephp' . DS . 'cakephp');
-define('CORE_PATH', ROOT . 'vendor' . DS . 'cakephp' . DS . 'cakephp' . DS);
-define('CAKE', CORE_PATH . 'src' . DS);
-define('TESTS', ROOT . 'tests');
-define('APP', ROOT . 'tests' . DS . 'test_app' . DS);
-define('APP_DIR', 'test_app');
-define('WEBROOT_DIR', 'webroot');
-define('WWW_ROOT', APP . 'webroot' . DS);
-define('TMP', sys_get_temp_dir() . DS);
-define('CONFIG', APP . 'config' . DS);
-define('CACHE', TMP);
-define('LOGS', TMP);
 
 $loader = new \Cake\Core\ClassLoader;
 $loader->register();
