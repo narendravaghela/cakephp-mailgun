@@ -27,7 +27,7 @@ if (!defined('DS')) {
 
 // Path constants to a few helpful things.
 define('ROOT', $root);
-define('CAKE_CORE_INCLUDE_PATH', ROOT . '/vendor/cakephp/cakephp');
+define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'vendor' . DS . 'cakephp' . DS . 'cakephp');
 define('CORE_PATH', CAKE_CORE_INCLUDE_PATH . DS);
 define('CAKE', CORE_PATH . 'src' . DS);
 define('TESTS', ROOT . DS . 'tests');
@@ -36,7 +36,7 @@ define('APP_DIR', 'test_app');
 define('WEBROOT_DIR', 'webroot');
 define('WWW_ROOT', APP . DS . WEBROOT_DIR . DS);
 define('TMP', ROOT . DS . 'tmp' . DS);
-define('CONFIG', ROOT . '/tests/config/');
+define('CONFIG', APP . 'config' . DS);
 define('CACHE', TMP . 'cache' . DS);
 define('LOGS', TMP . 'logs' . DS);
 
