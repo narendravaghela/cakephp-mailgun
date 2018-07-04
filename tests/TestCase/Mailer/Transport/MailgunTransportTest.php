@@ -60,10 +60,10 @@ class MailgunTransportTest extends TestCase
         $email = new Email();
         $email->setTransport($this->MailgunTransport);
         $email->setFrom(['sender@test.mailgun.org' => 'Mailgun Test'])
-                ->setTo('test@test.mailgun.org')
-                ->setSubject('This is test subject')
-                ->setEmailFormat('text')
-                ->send('Testing Maingun');
+            ->setTo('test@test.mailgun.org')
+            ->setSubject('This is test subject')
+            ->setEmailFormat('text')
+            ->send('Testing Maingun');
     }
 
     /**
@@ -82,10 +82,10 @@ class MailgunTransportTest extends TestCase
         $email = new Email();
         $email->setTransport($this->MailgunTransport);
         $email->setFrom(['sender@test.mailgun.org' => 'Mailgun Test'])
-                ->setTo('test@test.mailgun.org')
-                ->setSubject('This is test subject')
-                ->setEmailFormat('text')
-                ->send('Testing Maingun');
+            ->setTo('test@test.mailgun.org')
+            ->setSubject('This is test subject')
+            ->setEmailFormat('text')
+            ->send('Testing Maingun');
     }
 
     /**
@@ -101,9 +101,9 @@ class MailgunTransportTest extends TestCase
         $email = new Email();
         $email->setTransport($this->MailgunTransport);
         $email->setTo('test@test.mailgun.org')
-                ->setSubject('This is test subject')
-                ->setEmailFormat('text')
-                ->send('Testing Maingun');
+            ->setSubject('This is test subject')
+            ->setEmailFormat('text')
+            ->send('Testing Maingun');
     }
 
     /**
@@ -118,10 +118,10 @@ class MailgunTransportTest extends TestCase
         $email = new Email();
         $email->setTransport($this->MailgunTransport);
         $result = $email->setFrom('sender@test.mailgun.org')
-                ->setTo('test@test.mailgun.org')
-                ->setSubject('This is test subject')
-                ->setEmailFormat('text')
-                ->send('Testing Maingun');
+            ->setTo('test@test.mailgun.org')
+            ->setSubject('This is test subject')
+            ->setEmailFormat('text')
+            ->send('Testing Maingun');
         $this->assertEquals("test.mailgun.org/messages", $result->http_endpoint_url);
     }
 
@@ -140,14 +140,14 @@ class MailgunTransportTest extends TestCase
         $email = new Email();
         $email->setTransport($mailgunTransport);
         $result = $email->setFrom('sender@test.mailgun.org')
-                ->setTo('test@test.mailgun.org')
-                ->setSubject('This is test subject')
-                ->setEmailFormat('both')
-                ->setAttachments([
-                    'cake_icon.png' => TESTS . DS . 'TestAssets' . DS . 'cake.icon.png',
-                    'cake.power.gif' => ['file' => TESTS . DS . 'TestAssets' . DS . 'cake.power.gif', 'contentId' => 'CakePower'],
-                ])
-                ->send('Testing Maingun');
+            ->setTo('test@test.mailgun.org')
+            ->setSubject('This is test subject')
+            ->setEmailFormat('both')
+            ->setAttachments([
+                'cake_icon.png' => TESTS . DS . 'TestAssets' . DS . 'cake.icon.png',
+                'cake.power.gif' => ['file' => TESTS . DS . 'TestAssets' . DS . 'cake.power.gif', 'contentId' => 'CakePower'],
+            ])
+            ->send('Testing Maingun');
         $this->assertEquals("test.mailgun.org/messages", $result->http_endpoint_url);
 
         $method = new \ReflectionMethod($mailgunTransport, '_processAttachments');
@@ -180,11 +180,11 @@ class MailgunTransportTest extends TestCase
         $email = new Email();
         $email->setTransport($mailgunTransport);
         $result = $email->setFrom('sender@test.mailgun.org')
-                ->setTo('test@test.mailgun.org')
-                ->setSubject('This is test subject')
-                ->addHeaders(['o:tag' => 'testing', 'o:tracking' => 'yes'])
-                ->addHeaders(['v:custom-data' => json_encode(['foo' => 'bar'])])
-                ->send('Testing Maingun');
+            ->setTo('test@test.mailgun.org')
+            ->setSubject('This is test subject')
+            ->addHeaders(['o:tag' => 'testing', 'o:tracking' => 'yes'])
+            ->addHeaders(['v:custom-data' => json_encode(['foo' => 'bar'])])
+            ->send('Testing Maingun');
         $this->assertEquals("test.mailgun.org/messages", $result->http_endpoint_url);
 
         $method = new \ReflectionMethod($mailgunTransport, '_getAdditionalEmailHeaders');
