@@ -1,4 +1,6 @@
 <?php
+require 'vendor/autoload.php';
+
 /**
  * Test suite bootstrap.
  *
@@ -39,8 +41,6 @@ define('TMP', ROOT . DS . 'tmp' . DS);
 define('CONFIG', APP . 'config' . DS);
 define('CACHE', TMP . 'cache' . DS);
 define('LOGS', TMP . 'logs' . DS);
-
-require ROOT . '/vendor/autoload.php';
 
 use Cake\Cache\Cache;
 use Cake\Core\Configure;
