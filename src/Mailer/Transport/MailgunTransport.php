@@ -189,7 +189,7 @@ class MailgunTransport extends AbstractTransport
             }
         }
 
-        $emailFormat = $this->_cakeEmail->emailFormat();
+        $emailFormat = $this->_cakeEmail->getEmailFormat();
 
         $this->_params['html'] = $this->_cakeEmail->message(Email::MESSAGE_HTML);
 
@@ -213,7 +213,7 @@ class MailgunTransport extends AbstractTransport
     protected function _sendMessage()
     {
         $this->_lastResponse = null;
-        $response = $this->_mgObject->sendMessage($this->config('domain'), $this->_params, $this->_attachments);
+        $response = $this->_mgObject->sendMessage($this->getConfig('domain'), $this->_params, $this->_attachments);
         $this->_reset();
         $this->_lastResponse = $response;
 
@@ -249,11 +249,10 @@ class MailgunTransport extends AbstractTransport
     {
         $attachments = [];
 
-        foreach ($this->_cakeEmail->attachments() as $name => $file) {
+        foreach ($this->_cakeEmail->getAttachments() as $name => $file) {
             if (!empty($file['contentId'])) {
                 $attachments['inline'][] = ['filePath' => '@' . $file['file'], 'remoteName' => $file['contentId']];
-            }
-            else {
+            } else {
                 $attachments['attachment'][] = ['filePath' => '@' . $file['file'], 'remoteName' => $name];
             }
         }
@@ -268,29 +267,29 @@ class MailgunTransport extends AbstractTransport
      */
     protected function _setMgObject()
     {
-        if (empty($this->config('apiKey'))) {
+        if (empty($this->getConfig('apiKey'))) {
             throw new MissingCredentialsException(['API Key']);
         }
 
-        if (empty($this->config('domain'))) {
+        if (empty($this->getConfig('domain'))) {
             throw new MissingCredentialsException(['sending domain']);
         }
 
         if (!is_a($this->_mgObject, 'Mailgun')) {
-            if (!$this->config('isTest')) {
+            if (!$this->getConfig('isTest')) {
                 $client = new Client();
-                $this->_mgObject = new Mailgun($this->config('apiKey'), $client);
+                $this->_mgObject = new Mailgun($this->getConfig('apiKey'), $client);
             } else {
-                $this->_mgObject = new MailgunTest($this->config('apiKey'));
+                $this->_mgObject = new MailgunTest($this->getConfig('apiKey'));
             }
         }
 
-        if (!$this->config('ssl')) {
+        if (!$this->getConfig('ssl')) {
             $this->_mgObject->setSslEnabled(false);
         }
 
-        if ($this->config('apiVersion')) {
-            $this->_mgObject->setApiVersion($this->config('apiVersion'));
+        if ($this->getConfig('apiVersion')) {
+            $this->_mgObject->setApiVersion($this->getConfig('apiVersion'));
         } else {
             $this->_mgObject->setApiVersion($this->_apiVersion);
         }
