@@ -77,13 +77,6 @@ class MailgunTransport extends AbstractTransport
     protected $_varPrefix = 'v:';
 
     /**
-     * API request parameters
-     *
-     * @var array
-     */
-    protected $_reqParams = [];
-
-    /**
      * FormData object
      *
      * @var \Cake\Http\Client\FormData
