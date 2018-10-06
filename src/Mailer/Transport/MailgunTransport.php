@@ -261,11 +261,11 @@ class MailgunTransport extends AbstractTransport
      *  $email = new Email('mailgun');
      *  $emailInstance = $email->getTransport();
      *
-     *  $customMessageData = [
+     *  $recipientData = [
      *      'foo@example.com' => ['name' => 'Foo Bar'],
      *      'john@example.com' => ['name' => 'John Doe'],
      *  ];
-     *  $emailInstance->setRecipientVars($customMessageData);
+     *  $emailInstance->setRecipientVars($recipientData);
      *
      *  $email->send();
      * ```
