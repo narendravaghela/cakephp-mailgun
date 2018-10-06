@@ -56,6 +56,7 @@ class MailgunTransportTest extends TestCase
             ->setSubject('Email from CakePHP Mailgun plugin')
             ->send('Hello there, <br> This is an email from CakePHP Mailgun Email plugin.');
 
+        $emailInstance = $email->getTransport();
         $requestData = $emailInstance->getRequestData();
         $this->assertEmpty((string)$requestData);
 
