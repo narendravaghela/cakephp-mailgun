@@ -161,7 +161,7 @@ $email->setFrom(['you@yourdomain.com' => 'CakePHP Mailgun'])
     ->setTo('foo@example.com')
     ->addTo(['bar@example.com', 'john@example.com'])
     ->setSubject('Hello %recipient.name%, welcome to %recipient.city%!')
-	->send('Message from CakePHP Mailgun plugin');
+    ->send('Message from CakePHP Mailgun plugin');
 ```
 > The keys of recipient variables must be the email address of recipients. Once set, you can use the %recipient.varname% in subject or body.
 
@@ -180,7 +180,7 @@ $email->setFrom(['you@yourdomain.com' => 'CakePHP Mailgun'])
     ->setTo('foo@example.com')
     ->addTo(['bar@example.com', 'john@example.com'])
     ->setSubject('Hello %recipient.name%, welcome to %recipient.city%!')
-	->send('Message from CakePHP Mailgun plugin');
+    ->send('Message from CakePHP Mailgun plugin');
 ```
 
 #### DKIM signature
