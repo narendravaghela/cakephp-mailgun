@@ -22,6 +22,8 @@ unset($findRoot);
 
 chdir($root);
 
+define('TESTS', dirname(__DIR__) . DS . 'tests');
+
 if (file_exists($root . '/config/bootstrap.php')) {
     require $root . '/config/bootstrap.php';
 
