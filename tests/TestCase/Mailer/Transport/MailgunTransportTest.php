@@ -115,7 +115,8 @@ class MailgunTransportTest extends TestCase
         $res = $email->setFrom('from@example.com')
             ->setTo('to@example.com')
             ->setAttachments([
-                'logo.png' => ['file' => TESTS . DS . 'assets' . DS . 'logo.png', 'contentId' => 'logo.png']
+                'logo.png' => ['file' => TESTS . DS . 'assets' . DS . 'logo.png', 'contentId' => 'logo.png'],
+                'cake.power.gif' => ['file' => TESTS . DS . 'assets' . DS . 'cake.power.gif']
             ])
             ->setSubject('Email from CakePHP Mailgun plugin')
             ->send('Hello there, <br> This is an email from CakePHP Mailgun Email plugin.');
@@ -232,6 +233,7 @@ class MailgunTransportTest extends TestCase
         ];
         $emailInstance = $email->getTransport();
         $emailInstance->setRecipientVars($recipientData);
+        $emailInstance->setRecipientVars(json_encode($recipientData));
 
         $res = $email->setFrom('from@example.com')
             ->setTo('foo@example.com')
