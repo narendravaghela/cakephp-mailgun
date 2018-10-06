@@ -243,7 +243,7 @@ class MailgunTransport extends AbstractTransport
             if (!empty($decoded) && json_last_error() == JSON_ERROR_NONE) {
                 $this->_formData->add("{$this->_varPrefix}$name", $value);
             } else {
-                throw new MailgunApiException("setCustomMessageData(): Value must be a valid JSON string.");
+                throw new MailgunApiException("setCustomMessageData(): Value must be a valid JSON string or an array.");
             }
         }
 
