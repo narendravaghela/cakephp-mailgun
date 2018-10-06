@@ -1,4 +1,3 @@
-
 # Mailgun Plugin for CakePHP 3
 
 [![Build Status](https://travis-ci.org/narendravaghela/cakephp-mailgun.svg?branch=master)](https://travis-ci.org/narendravaghela/cakephp-mailgun)
@@ -164,6 +163,24 @@ $email->setFrom(['you@yourdomain.com' => 'CakePHP Mailgun'])
     ->send('Message from CakePHP Mailgun plugin');
 ```
 > The keys of recipient variables must be the email address of recipients. Once set, you can use the %recipient.varname% in subject or body.
+
+### Custom Message Data
+You can attache some data to message. The data can be used in any webhook events related to the email. Use `setCustomMessageData()` method and pass the required data. Read [this](https://documentation.mailgun.com/en/latest/user_manual.html#attaching-data-to-messages) for more details.
+
+```php
+$email = new Email('mailgun');
+$emailInstance = $email->getTransport();
+$emailInstance->setCustomMessageData('my-custom-data', ["my_message_id" => 123]);
+// or
+$emailInstance->setCustomMessageData('my-custom-data', '{"my_message_id": 123}');
+$email->setFrom(['you@yourdomain.com' => 'CakePHP Mailgun'])
+    ->setTo('foo@example.com')
+    ->addTo(['bar@example.com', 'john@example.com'])
+    ->setSubject('Hello %recipient.name%, welcome to %recipient.city%!')
+    ->send('Message from CakePHP Mailgun plugin');
+```
+
+> The data must be a valid `JSON` string or an `Array`.
 
 ### Additional Options
 You can also set a few more options in you email request like tagging, delivery time, test mode etc. For this, you need to use the transport instance and `setOption()` method. Read [this](https://documentation.mailgun.com/en/latest/api-sending.html#sending) for detailed information.
