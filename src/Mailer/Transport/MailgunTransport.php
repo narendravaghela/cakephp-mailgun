@@ -320,7 +320,7 @@ class MailgunTransport extends AbstractTransport
         }
 
         foreach ($email->getBcc() as $bccEmail => $bccName) {
-            $this->_formData->add('cc', sprintf("%s <%s>", $bccName, $bccEmail));
+            $this->_formData->add('bcc', sprintf("%s <%s>", $bccName, $bccEmail));
         }
     }
 
