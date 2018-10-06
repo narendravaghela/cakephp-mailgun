@@ -350,3 +350,6 @@ class MailgunTransport extends AbstractTransport
         $this->_formData = new FormData();
     }
 }
+
+// @deprecated 3.0.0 Add backwards compat alias.
+class_alias('Mailgun\Mailer\Transport\Mailgun', 'MailgunEmail\Mailer\Transport\Mailgun');
