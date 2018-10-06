@@ -61,7 +61,7 @@ class MailgunTransportTest extends TestCase
 
         $email = new Email();
         $email->setProfile(['transport' => 'mailgun']);
-        $res = $email->setFrom(['from@example.com' => 'CakePHP Mailgun Email'])
+        $res = $email->setFrom('from@example.com')
             ->setTo('to@example.com')
             ->addCC(['bar@example.com', 'john@example.com' => 'John'])
             ->addBcc(['bar@example.com', 'john@example.com' => 'John'])
