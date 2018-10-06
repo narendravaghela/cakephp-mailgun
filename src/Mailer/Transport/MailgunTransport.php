@@ -197,7 +197,7 @@ class MailgunTransport extends AbstractTransport
             foreach ($value as $optionValue) {
                 $this->_formData->add("{$this->_optionPrefix}$name", (string)$optionValue);
             }
-        } elseif (is_string($value)) {
+        } elseif (is_string($value) || is_numeric($value)) {
             $this->_formData->add("{$this->_optionPrefix}$name", (string)$value);
         } else {
             throw new MailgunApiException("setOption(): Value of option must be a valid string or array.");
