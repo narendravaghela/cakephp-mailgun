@@ -216,15 +216,15 @@ class MailgunTransport extends AbstractTransport
      * ```
      *  $email = new Email('mailgun');
      *  $emailInstance = $email->getTransport();
-     *  $emailInstance->setCustomMessageData('{"my_message_id": 123}');
+     *  $emailInstance->setCustomMessageData('my-custom-data', '{"my_message_id": 123}');
      *
      *  // or
      *  $customMessageData = ['foo' => 'bar', 'john' => 'doe'];
-     *  $emailInstance->setCustomMessageData(json_encode($customMessageData));
+     *  $emailInstance->setCustomMessageData('my-custom-data', json_encode($customMessageData));
      *
      *  // or
      *  $customMessageData = ['foo' => 'bar', 'john' => 'doe'];
-     *  $emailInstance->setCustomMessageData($customMessageData);
+     *  $emailInstance->setCustomMessageData('my-custom-data', $customMessageData);
      *
      *  $email->send();
      * ```
