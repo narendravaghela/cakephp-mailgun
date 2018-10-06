@@ -201,7 +201,7 @@ $emailInstance = $email->getTransport();
 $emailInstance->setOption('deliverytime', strtotime('+1 day'));
 ```
 
-> Note: Messages can be scheduled for a maximum of 3 days in the future as per Mailgun documentation.
+> Note: Messages can be scheduled for a maximum of 3 days in the future as per Mailgun documentation. Pass a valid unix timestamp as a value.
 
 #### Test Mode
 Enables sending in test mode. Use `testmode` as option name.
