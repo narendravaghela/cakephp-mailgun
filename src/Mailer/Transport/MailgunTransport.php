@@ -106,11 +106,11 @@ class MailgunTransport extends AbstractTransport
     public function send(Email $email)
     {
         if (empty($this->getConfig('apiKey'))) {
-            throw new MailgunApiException(['Api Key for Mailgun could not found.']);
+            throw new MailgunApiException('Api Key for Mailgun could not found.');
         }
 
         if (empty($this->getConfig('domain'))) {
-            throw new MailgunApiException(['Domain for Mailgun could not found.']);
+            throw new MailgunApiException('Domain for Mailgun could not found.');
         }
 
         $this->_prepareEmailAddresses($email);
@@ -190,7 +190,7 @@ class MailgunTransport extends AbstractTransport
     public function setOption($name, $value)
     {
         if (!in_array($name, $this->_allowedOptions)) {
-            throw new MailgunApiException("{$name} is not a valid option name for Mailgun.");
+            throw new MailgunApiException("setOption(): {$name} is not a valid option name for Mailgun.");
         }
 
         if (is_array($value)) {
