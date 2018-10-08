@@ -8,6 +8,8 @@
 
 This plugin provides email delivery using [Mailgun API](https://www.mailgun.com/).
 
+> If you are using `1.x`, please read [this guide](https://github.com/narendravaghela/cakephp-mailgun/blob/master/UPGRADE.md) for upgrade your existing code.
+
 ## Requirements
 
 This plugin has the following requirements:
