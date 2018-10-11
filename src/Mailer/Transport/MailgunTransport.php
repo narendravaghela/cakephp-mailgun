@@ -133,11 +133,11 @@ class MailgunTransport extends AbstractTransport
 
         $attachments = $email->getAttachments();
         if (!empty($attachments)) {
-            foreach ($attachments as $attachment) {
+            foreach ($attachments as $fileName => $attachment) {
                 if (empty($attachment['contentId'])) {
-                    $file = $this->_formData->addFile('attachment', fopen($attachment['file'], 'r'));
+                    $file = $this->_addFile('attachment', $attachment, $fileName);
                 } else {
-                    $file = $this->_formData->addFile('inline', fopen($attachment['file'], 'r'));
+                    $file = $this->_addFile('inline', $attachment, $fileName);
                     $file->contentId($attachment['contentId']);
                 }
                 $file->disposition('attachment');
@@ -154,6 +154,28 @@ class MailgunTransport extends AbstractTransport
         $this->_reset();
 
         return $res;
+    }
+
+    /**
+     * Add file attachment to email.
+     *
+     * @param string $partName Name of the file part
+     * @param array $attachment Attachment as initially set via setAttachment()
+     * @param string $fileName Desired filename of the attachment
+     * @return \Cake\Http\Client\FormDataPart
+     */
+    protected function _addFile($partName, $attachment, $fileName = '')
+    {
+        if (isset($attachment['file'])) {
+            $file = $this->_formData->addFile($partName, fopen($attachment['file'], 'r'));
+        } else {
+            $file = $this->_formData->newPart($partName, base64_decode($attachment['data']));
+            $file->type($attachment['mimetype']);
+            $file->filename($fileName);
+            $this->_formData->add($file);
+        }
+
+        return $file;
     }
 
     /**
