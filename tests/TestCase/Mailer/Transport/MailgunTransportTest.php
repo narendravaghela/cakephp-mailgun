@@ -129,6 +129,27 @@ class MailgunTransportTest extends TestCase
         $this->assertStringEndsWith("--$boundary--", rtrim($reqDataString));
     }
 
+    public function testRawBinaryAttachments()
+    {
+        $this->_setEmailConfig();
+        $email = new Email();
+        $email->setProfile(['transport' => 'mailgun']);
+        $res = $email->setFrom('from@example.com')
+            ->setTo('to@example.com')
+            ->setAttachments([
+                'myfile.txt' => ['data' => 'c29tZSB0ZXh0', 'mimetype' => 'text/plain'], // c29tZSB0ZXh0 = base64_encode('some text')
+            ])
+            ->setSubject('Email from CakePHP Mailgun plugin')
+            ->send('Hello there, <br> This is an email from CakePHP Mailgun Email plugin.');
+
+        $reqData = $res['reqData'];
+        $boundary = $reqData->boundary();
+        $reqDataString = (string)$reqData;
+        $this->assertNotEmpty($reqDataString);
+        $this->assertStringStartsWith("--$boundary", $reqDataString);
+        $this->assertStringEndsWith("--$boundary--", rtrim($reqDataString));
+    }
+
     public function testSetOption()
     {
         $this->_setEmailConfig();
