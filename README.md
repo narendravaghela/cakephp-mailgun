@@ -111,6 +111,7 @@ $email->setFrom(['you@yourdomain.com' => 'CakePHP Mailgun'])
     ->setAttachments([
         'cake_icon1.png' => Configure::read('App.imageBaseUrl') . 'cake.icon.png',
         'cake_icon2.png' => ['file' => Configure::read('App.imageBaseUrl') . 'cake.icon.png', 'contentId' => 'cake.icon.png'],
+        'myfile.txt' => ['data' => 'c29tZSB0ZXh0', 'mimetype' => 'text/plain'], // c29tZSB0ZXh0 = base64_encode('some text')
         WWW_ROOT . 'favicon.ico'
     ])
     ->setSubject('Email from CakePHP Mailgun plugin')
