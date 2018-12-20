@@ -359,7 +359,7 @@ class MailgunTransport extends AbstractTransport
             'headers' => ['Content-Type' => $this->_formData->contentType()]
         ]);
 
-        return $response->json;
+        return $response->getJson();
     }
 
     /**
