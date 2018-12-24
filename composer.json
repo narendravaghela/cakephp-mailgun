@@ -20,7 +20,7 @@
         "issues": "https://github.com/narendravaghela/cakephp-mailgun/issues"
     },
     "require": {
-        "cakephp/cakephp": "^3.4.0"
+        "cakephp/cakephp": "^3.7.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7.14|^6.0",
