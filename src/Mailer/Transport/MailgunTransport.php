@@ -397,6 +397,8 @@ class MailgunTransport extends AbstractTransport
      * Process the Email headers and covert them to mailgun form parts
      *
      * @param Email $email Email to work with
+     *
+     * @return void
      */
     protected function _processHeaders(Email $email)
     {
