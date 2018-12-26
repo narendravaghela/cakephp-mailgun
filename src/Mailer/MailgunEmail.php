@@ -49,7 +49,7 @@ class MailgunEmail extends CoreEmail
      *
      * @return $this
      */
-    public function enableDkim(bool $enable = true)
+    public function enableDkim($enable = true)
     {
         $this->addHeaders(['X-Mailgun-Dkim' => $enable ? 'yes' : 'no']);
 
@@ -103,7 +103,7 @@ class MailgunEmail extends CoreEmail
      *
      * @see https://documentation.mailgun.com/en/latest/user_manual.html#tracking-messages
      */
-    public function enableTracking(bool $track = true)
+    public function enableTracking($track = true)
     {
         $this->addHeaders(['X-Mailgun-Track' => $track ? 'yes' : 'no']);
 
