@@ -93,7 +93,7 @@ class MailgunEmailTest extends TestCase
         $this->Email->deliverBy($time);
 
         $headers = $this->Email->getHeaders(['X-Mailgun-Deliver-By']);
-        $expected = $time->format(\DateTimeInterface::RFC2822);
+        $expected = $time->format(MailgunEmail::TIMEFORMAT);
 
         $this->assertEquals($expected, $headers['X-Mailgun-Deliver-By']);
     }

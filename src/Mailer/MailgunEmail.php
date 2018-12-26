@@ -6,6 +6,7 @@ use Mailgun\Mailer\Exception\MailgunApiException;
 
 class MailgunEmail extends CoreEmail
 {
+    const TIMEFORMAT = 'D, d M Y H:i:s O';
 
     /**
      * Constructor
@@ -73,7 +74,7 @@ class MailgunEmail extends CoreEmail
         if ($time->diff(new \DateTime())->days > 3) {
             throw new MailgunApiException('Delivery date can only be max of 3 days in the future.');
         }
-        $this->addHeaders(['X-Mailgun-Deliver-By' => $time->format(\DateTimeInterface::RFC2822)]);
+        $this->addHeaders(['X-Mailgun-Deliver-By' => $time->format(self::TIMEFORMAT)]);
 
         return $this;
     }
