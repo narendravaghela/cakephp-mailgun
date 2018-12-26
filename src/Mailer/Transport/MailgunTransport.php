@@ -57,6 +57,20 @@ class MailgunTransport extends AbstractTransport
         'skip-verification'
     ];
 
+    protected $_mailgunHeaderPrefix = 'X-Mailgun';
+
+    protected $_mailgunHeaders = [
+        'X-Mailgun-Tag' => 'tag',
+        'X-Mailgun-Dkim' => 'dkim',
+        'X-Mailgun-Deliver-By' => 'deliverytime',
+        'X-Mailgun-Drop-Message' => 'testmode',
+        'X-Mailgun-Track' => 'tracking',
+        'X-Mailgun-Track-Clicks' => 'tracking-clicks',
+        'X-Mailgun-Track-Opens' => 'tracking-opens',
+        'X-Mailgun-Require-TLS' => 'require-tls',
+        'X-Mailgun-Skip-Verification' => 'skip-verification'
+    ];
+
     /**
      * Prefix for setting options
      *
@@ -124,12 +138,7 @@ class MailgunTransport extends AbstractTransport
             $this->_formData->add('text', trim($email->message(Email::MESSAGE_TEXT)));
         }
 
-        $customHeaders = $email->getHeaders(['_headers']);
-        foreach ($customHeaders as $header => $value) {
-            if (0 === strpos($header, $this->_customHeaderPrefix) && !empty($value)) {
-                $this->_formData->add($header, $value);
-            }
-        }
+        $this->_processHeaders($email);
 
         $attachments = $email->getAttachments();
         if (!empty($attachments)) {
@@ -144,8 +153,8 @@ class MailgunTransport extends AbstractTransport
             }
         }
 
-        $apiRsponse = $this->_sendEmail();
-        $res = ['apiResponse' => $apiRsponse];
+        $apiResponse = $this->_sendEmail();
+        $res = ['apiResponse' => $apiResponse];
 
         if (Configure::read('debug')) {
             $res['reqData'] = $this->_formData;
@@ -208,9 +217,13 @@ class MailgunTransport extends AbstractTransport
      * @param string|array $value Option value or array of values (string)
      * @return $this
      * @throws MailgunApiException If value is not a valid string or array
+     * @deprecated 4.0.0 Please use Mailgun\Mailer\MailgunEmail or Cake\Mailer\Email and set the X-Mailgun-* headers directly.
+     * @codeCoverageIgnore
      */
     public function setOption($name, $value)
     {
+        deprecationWarning('setOption(): is deprecated please use Mailgun\Mailer\MailgunEmail or Cake\Mailer\Email and set the X-Mailgun-* headers directly.');
+
         if (!in_array($name, $this->_allowedOptions)) {
             throw new MailgunApiException("setOption(): {$name} is not a valid option name for Mailgun.");
         }
@@ -255,9 +268,13 @@ class MailgunTransport extends AbstractTransport
      * @param mixed $value A valid JSON string or array
      * @return $this
      * @throws MailgunApiException If value is not a valid JSON string
+     * @deprecated 4.0.0 Please use Mailgun\Mailer\MailgunEmail or Cake\Mailer\Email and set the X-Mailgun-* headers directly.
+     * @codeCoverageIgnore
      */
     public function setCustomMessageData($name, $value)
     {
+        deprecationWarning('setCustomMessageData(): is deprecated please use Mailgun\Mailer\MailgunEmail or Cake\Mailer\Email and set the X-Mailgun-* headers directly.');
+
         if (is_array($value)) {
             $this->_formData->add("{$this->_varPrefix}$name", json_encode($value));
         } elseif (is_string($value)) {
@@ -301,9 +318,13 @@ class MailgunTransport extends AbstractTransport
      *
      * @param string|array $value A valid JSON string or array
      * @return $this
+     * @deprecated 4.0.0 Please use Mailgun\Mailer\MailgunEmail or Cake\Mailer\Email and set the X-Mailgun-* headers directly.
+     * @codeCoverageIgnore
      */
     public function setRecipientVars($value)
     {
+        deprecationWarning('setRecipientVars(): is deprecated please use Mailgun\Mailer\MailgunEmail or Cake\Mailer\Email and set the X-Mailgun-* headers directly.');
+
         if (is_array($value)) {
             $this->_formData->add("recipient-variables", json_encode($value));
         } else {
@@ -370,5 +391,36 @@ class MailgunTransport extends AbstractTransport
     protected function _reset()
     {
         $this->_formData = new FormData();
+    }
+
+    /**
+     * Process the Email headers and covert them to mailgun form parts
+     *
+     * @param Email $email Email to work with
+     */
+    protected function _processHeaders(Email $email)
+    {
+        $customHeaders = $email->getHeaders(['_headers']);
+        foreach ($customHeaders as $header => $value) {
+            if (0 === strpos($header, $this->_mailgunHeaderPrefix) && !empty($value)) {
+                if ($header === $this->_mailgunHeaderPrefix . '-Recipient-Variables') {
+                    $this->_formData->add("recipient-variables", $value);
+                } elseif ($header === $this->_mailgunHeaderPrefix . '-Variables') {
+                    foreach ($value as $k => $v) {
+                        if (is_array($v)) {
+                            $this->_formData->add("{$this->_varPrefix}$k", json_encode($v));
+                        } else {
+                            $this->_formData->add("{$this->_varPrefix}$k", $v);
+                        }
+                    }
+                } else {
+                    $var = $this->_mailgunHeaders[$header];
+                    $this->_formData->add("{$this->_optionPrefix}$var", $value);
+                }
+            }
+            if (0 === strpos($header, $this->_customHeaderPrefix) && !empty($value)) {
+                $this->_formData->add($header, $value);
+            }
+        }
     }
 }
