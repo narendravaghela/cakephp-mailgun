@@ -181,8 +181,9 @@ class MailgunTransportTest extends TestCase
         $this->assertStringStartsWith("--$boundary", $reqDataString);
         $this->assertTextContains('Content-Disposition: form-data; name="o:testmode"', $reqDataString);
         $this->assertTextContains('yes', $reqDataString);
-        $this->assertTextContains('Content-Disposition: form-data; name="o:tag"', $reqDataString);
+        $this->assertTextContains('Content-Disposition: form-data; name="o:tag[0]"', $reqDataString);
         $this->assertTextContains('newsletter', $reqDataString);
+        $this->assertTextContains('Content-Disposition: form-data; name="o:tag[1]"', $reqDataString);
         $this->assertTextContains('welcome email', $reqDataString);
     }
 
