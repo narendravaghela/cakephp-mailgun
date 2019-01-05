@@ -38,7 +38,7 @@ class MailgunEmail extends CoreEmail
             throw new MailgunApiException('You can only set a max of 3 tags.');
         }
 
-        $this->addHeaders(['X-Mailgun-Tag' => implode(',', $tags)]);
+        $this->addHeaders(['X-Mailgun-Tag' => json_encode($tags)]);
 
         return $this;
     }

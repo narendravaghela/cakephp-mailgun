@@ -36,10 +36,10 @@ class MailgunEmailTest extends TestCase
 
     public function testTagsArray()
     {
-        $this->Email->setTags(['tag1', 'tag2', 'tag3']);
+        $tags = ['tag1', 'tag2', 'tag3'];
+        $this->Email->setTags($tags);
         $headers = $this->Email->getHeaders(['X-Mailgun-Tag']);
-        $expected = 'tag1,tag2,tag3';
-        $this->assertEquals($expected, $headers['X-Mailgun-Tag']);
+        $this->assertEquals(json_encode($tags), $headers['X-Mailgun-Tag']);
     }
 
     public function testTagsArrayMoreThanThree()
@@ -54,7 +54,7 @@ class MailgunEmailTest extends TestCase
     {
         $this->Email->setTags('tag1,tag2,tag3');
         $headers = $this->Email->getHeaders(['X-Mailgun-Tag']);
-        $expected = 'tag1,tag2,tag3';
+        $expected = json_encode(['tag1', 'tag2', 'tag3']);
 
         $this->assertEquals($expected, $headers['X-Mailgun-Tag']);
     }
