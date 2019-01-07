@@ -17,7 +17,10 @@ namespace Mailgun\Test\TestCase\Mailer\Transport;
 
 use Cake\Core\Configure;
 use Cake\Mailer\Email;
+use Cake\Mailer\TransportFactory;
 use Cake\TestSuite\TestCase;
+use Mailgun\Mailer\MailgunEmail;
+use Mailgun\Mailer\Transport\MailgunTransport;
 
 class MailgunTransportTest extends TestCase
 {
@@ -32,6 +35,7 @@ class MailgunTransportTest extends TestCase
     public function testSendEmail()
     {
         $res = $this->_sendEmail();
+        /** @var \Cake\Http\Client\FormData $reqData */
         $reqData = $res['reqData'];
         $boundary = $reqData->boundary();
         $reqDataString = (string)$reqData;
@@ -56,10 +60,12 @@ class MailgunTransportTest extends TestCase
             ->setSubject('Email from CakePHP Mailgun plugin')
             ->send('Hello there, <br> This is an email from CakePHP Mailgun Email plugin.');
 
+        /** @var MailgunTransport $emailInstance */
         $emailInstance = $email->getTransport();
         $requestData = $emailInstance->getRequestData();
         $this->assertEmpty((string)$requestData);
 
+        /** @var \Cake\Http\Client\FormData $reqData */
         $reqData = $res['reqData'];
         $boundary = $reqData->boundary();
         $reqDataString = (string)$reqData;
@@ -89,6 +95,7 @@ class MailgunTransportTest extends TestCase
             ->setSubject('Email from CakePHP Mailgun plugin')
             ->send('Hello there, <br> This is an email from CakePHP Mailgun Email plugin.');
 
+        /** @var \Cake\Http\Client\FormData $reqData */
         $reqData = $res['reqData'];
         $boundary = $reqData->boundary();
         $reqDataString = (string)$reqData;
@@ -121,6 +128,7 @@ class MailgunTransportTest extends TestCase
             ->setSubject('Email from CakePHP Mailgun plugin')
             ->send('Hello there, <br> This is an email from CakePHP Mailgun Email plugin.');
 
+        /** @var \Cake\Http\Client\FormData $reqData */
         $reqData = $res['reqData'];
         $boundary = $reqData->boundary();
         $reqDataString = (string)$reqData;
@@ -142,6 +150,7 @@ class MailgunTransportTest extends TestCase
             ->setSubject('Email from CakePHP Mailgun plugin')
             ->send('Hello there, <br> This is an email from CakePHP Mailgun Email plugin.');
 
+        /** @var \Cake\Http\Client\FormData $reqData */
         $reqData = $res['reqData'];
         $boundary = $reqData->boundary();
         $reqDataString = (string)$reqData;
@@ -153,18 +162,17 @@ class MailgunTransportTest extends TestCase
     public function testSetOption()
     {
         $this->_setEmailConfig();
-        $email = new Email();
-        $email->setProfile(['transport' => 'mailgun']);
+        $email = new MailgunEmail();
 
-        $emailInstance = $email->getTransport();
-        $emailInstance->setOption('testmode', 'yes');
-        $emailInstance->setOption('tag', ['newsletter', 'welcome email']);
+        $email->testMode();
+        $email->setTags(['newsletter', 'welcome email']);
 
         $res = $email->setFrom('from@example.com')
             ->setTo('to@example.com')
             ->setSubject('Email from CakePHP Mailgun plugin')
             ->send();
 
+        /** @var \Cake\Http\Client\FormData $reqData */
         $reqData = $res['reqData'];
         $boundary = $reqData->boundary();
         $reqDataString = (string)$reqData;
@@ -173,51 +181,49 @@ class MailgunTransportTest extends TestCase
         $this->assertStringStartsWith("--$boundary", $reqDataString);
         $this->assertTextContains('Content-Disposition: form-data; name="o:testmode"', $reqDataString);
         $this->assertTextContains('yes', $reqDataString);
-        $this->assertTextContains('Content-Disposition: form-data; name="o:tag"', $reqDataString);
+        $this->assertTextContains('Content-Disposition: form-data; name="o:tag[0]"', $reqDataString);
         $this->assertTextContains('newsletter', $reqDataString);
+        $this->assertTextContains('Content-Disposition: form-data; name="o:tag[1]"', $reqDataString);
         $this->assertTextContains('welcome email', $reqDataString);
-    }
-
-    public function testInvalidOptionException()
-    {
-        $this->expectException('Mailgun\Mailer\Exception\MailgunApiException');
-
-        $this->_setEmailConfig();
-        $email = new Email();
-        $email->setProfile(['transport' => 'mailgun']);
-
-        $emailInstance = $email->getTransport();
-        $emailInstance->setOption('foo', 'bar');
-    }
-
-    public function testInvalidOptionValueException()
-    {
-        $this->expectException('Mailgun\Mailer\Exception\MailgunApiException');
-
-        $this->_setEmailConfig();
-        $email = new Email();
-        $email->setProfile(['transport' => 'mailgun']);
-
-        $emailInstance = $email->getTransport();
-        $emailInstance->setOption('testmode', $email);
     }
 
     public function testSetCustomMessageData()
     {
         $this->_setEmailConfig();
-        $email = new Email();
-        $email->setProfile(['transport' => 'mailgun']);
+        $email = new MailgunEmail();
 
-        $customMessageData = ['foo' => 'bar', 'john' => 'doe'];
-        $emailInstance = $email->getTransport();
-        $emailInstance->setCustomMessageData('custom-data-array', $customMessageData);
-        $emailInstance->setCustomMessageData('my-custom-data', '{"my_message_id": 123}');
+        $email->setMailgunVars(['my-custom-data' => '{"my_message_id": 123}']);
 
         $res = $email->setFrom('from@example.com')
             ->setTo('to@example.com')
             ->setSubject('Email from CakePHP Mailgun plugin')
             ->send();
 
+        /** @var \Cake\Http\Client\FormData $reqData */
+        $reqData = $res['reqData'];
+        $boundary = $reqData->boundary();
+        $reqDataString = (string)$reqData;
+
+        $this->assertNotEmpty($reqDataString);
+        $this->assertStringStartsWith("--$boundary", $reqDataString);
+        $this->assertTextContains('Content-Disposition: form-data; name="v:my-custom-data"', $reqDataString);
+        $this->assertTextContains('{"my_message_id": 123}', $reqDataString);
+    }
+
+    public function testSetCustomMessageDataArray()
+    {
+        $this->_setEmailConfig();
+        $email = new MailgunEmail();
+
+        $customMessageData = ['foo' => 'bar', 'john' => 'doe'];
+        $email->setMailgunVars(['custom-data-array' => $customMessageData]);
+
+        $res = $email->setFrom('from@example.com')
+            ->setTo('to@example.com')
+            ->setSubject('Email from CakePHP Mailgun plugin')
+            ->send();
+
+        /** @var \Cake\Http\Client\FormData $reqData */
         $reqData = $res['reqData'];
         $boundary = $reqData->boundary();
         $reqDataString = (string)$reqData;
@@ -226,35 +232,19 @@ class MailgunTransportTest extends TestCase
         $this->assertStringStartsWith("--$boundary", $reqDataString);
         $this->assertTextContains('Content-Disposition: form-data; name="v:custom-data-array"', $reqDataString);
         $this->assertTextContains(json_encode($customMessageData), $reqDataString);
-        $this->assertTextContains('Content-Disposition: form-data; name="v:my-custom-data"', $reqDataString);
-        $this->assertTextContains('{"my_message_id": 123}', $reqDataString);
-    }
-
-    public function testSetCustomMessageDataException()
-    {
-        $this->expectException('Mailgun\Mailer\Exception\MailgunApiException');
-
-        $this->_setEmailConfig();
-        $email = new Email();
-        $email->setProfile(['transport' => 'mailgun']);
-
-        $emailInstance = $email->getTransport();
-        $emailInstance->setCustomMessageData('my-custom-data', 'invalid data string');
     }
 
     public function testSetRecipientVars()
     {
         $this->_setEmailConfig();
-        $email = new Email();
+        $email = new MailgunEmail();
         $email->setProfile(['transport' => 'mailgun']);
 
         $recipientData = [
             'foo@example.com' => ['name' => 'Foo Bar'],
             'john@example.com' => ['name' => 'John Doe'],
         ];
-        $emailInstance = $email->getTransport();
-        $emailInstance->setRecipientVars($recipientData);
-        $emailInstance->setRecipientVars(json_encode($recipientData));
+        $email->setRecipientVars($recipientData);
 
         $res = $email->setFrom('from@example.com')
             ->setTo('foo@example.com')
@@ -262,6 +252,7 @@ class MailgunTransportTest extends TestCase
             ->setSubject('Email from CakePHP Mailgun plugin')
             ->send();
 
+        /** @var \Cake\Http\Client\FormData $reqData */
         $reqData = $res['reqData'];
         $boundary = $reqData->boundary();
         $reqDataString = (string)$reqData;
@@ -270,18 +261,6 @@ class MailgunTransportTest extends TestCase
         $this->assertStringStartsWith("--$boundary", $reqDataString);
         $this->assertTextContains('Content-Disposition: form-data; name="recipient-variables"', $reqDataString);
         $this->assertTextContains(json_encode($recipientData), $reqDataString);
-    }
-
-    public function testSetRecipientVarsException()
-    {
-        $this->expectException('Mailgun\Mailer\Exception\MailgunApiException');
-
-        $this->_setEmailConfig();
-        $email = new Email();
-        $email->setProfile(['transport' => 'mailgun']);
-
-        $emailInstance = $email->getTransport();
-        $emailInstance->setRecipientVars('string data');
     }
 
     public function testApiExceptions()
@@ -328,25 +307,25 @@ class MailgunTransportTest extends TestCase
 
     protected function _setBlankApiEmailConfig()
     {
-        Email::dropTransport('mailgun');
-        Email::setConfigTransport('mailgun', ['className' => 'Mailgun.Mailgun', 'apiKey' => '', 'domain' => 'xxxxxxx-test.mailgun.org']);
+        TransportFactory::drop('mailgun');
+        TransportFactory::setConfig('mailgun', ['className' => 'Mailgun.Mailgun', 'apiKey' => '', 'domain' => 'xxxxxxx-test.mailgun.org']);
     }
 
     protected function _setBlankDomainEmailConfig()
     {
-        Email::dropTransport('mailgun');
-        Email::setConfigTransport('mailgun', ['className' => 'Mailgun.Mailgun', 'apiKey' => 'xxxxxxx-test-xxxxxxx', 'domain' => '']);
+        TransportFactory::drop('mailgun');
+        TransportFactory::setConfig('mailgun', ['className' => 'Mailgun.Mailgun', 'apiKey' => 'xxxxxxx-test-xxxxxxx', 'domain' => '']);
     }
 
     protected function _setBlankEmailConfig()
     {
-        Email::dropTransport('mailgun');
-        Email::setConfigTransport('mailgun', ['className' => 'Mailgun.Mailgun', 'apiKey' => '', 'domain' => '']);
+        TransportFactory::drop('mailgun');
+        TransportFactory::setConfig('mailgun', ['className' => 'Mailgun.Mailgun', 'apiKey' => '', 'domain' => '']);
     }
 
     protected function _setEmailConfig()
     {
-        Email::dropTransport('mailgun');
-        Email::setConfigTransport('mailgun', ['className' => 'Mailgun.Mailgun', 'apiKey' => 'xxxxxxx-test-xxxxxxx', 'domain' => 'xxxxxxx-test.mailgun.org']);
+        TransportFactory::drop('mailgun');
+        TransportFactory::setConfig('mailgun', ['className' => 'Mailgun.Mailgun', 'apiKey' => 'xxxxxxx-test-xxxxxxx', 'domain' => 'xxxxxxx-test.mailgun.org']);
     }
 }
