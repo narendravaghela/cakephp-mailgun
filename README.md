@@ -261,7 +261,8 @@ $email->skipVerification();
 ## Versions
 This plugin has several releases. Please use the appropriate version by downloading a tag, or checking out the correct branch.
 
- - `3.x` are compatible with CakePHP 3.7.x and greater. It is now under active development.
+ - `4.x` are compatible with CakePHP 3.7.x and greater. It is now under active development.
+ - `3.x` are compatible with CakePHP 3.7.x and greater. Only bug fixes will be applied to this.
  - `1.x` are compatible with older CakePHP 3 releases. Only bug fixes will be applied to this.
 
 ## Contributing
