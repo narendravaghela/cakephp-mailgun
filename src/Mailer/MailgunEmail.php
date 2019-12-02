@@ -55,7 +55,7 @@ class MailgunEmail extends CoreEmail
             throw new MailgunApiException('You can only set a max of 3 tags.');
         }
 
-        $this->addHeaders(['X-Mailgun-Tag' => json_encode($tags)]);
+        $this->message->addHeaders(['X-Mailgun-Tag' => json_encode($tags)]);
 
         return $this;
     }
@@ -69,7 +69,7 @@ class MailgunEmail extends CoreEmail
      */
     public function enableDkim($enable = true)
     {
-        $this->addHeaders(['X-Mailgun-Dkim' => $enable ? 'yes' : 'no']);
+        $this->message->addHeaders(['X-Mailgun-Dkim' => $enable ? 'yes' : 'no']);
 
         return $this;
     }
@@ -91,7 +91,7 @@ class MailgunEmail extends CoreEmail
         if ($time->diff(new \DateTime())->days > 3) {
             throw new MailgunApiException('Delivery date can only be max of 3 days in the future.');
         }
-        $this->addHeaders(['X-Mailgun-Deliver-By' => $time->format(self::TIMEFORMAT)]);
+        $this->message->addHeaders(['X-Mailgun-Deliver-By' => $time->format(self::TIMEFORMAT)]);
 
         return $this;
     }
@@ -107,7 +107,7 @@ class MailgunEmail extends CoreEmail
      */
     public function testMode($drop = true)
     {
-        $this->addHeaders(['X-Mailgun-Drop-Message' => $drop ? 'yes' : 'no']);
+        $this->message->addHeaders(['X-Mailgun-Drop-Message' => $drop ? 'yes' : 'no']);
 
         return $this;
     }
@@ -123,7 +123,7 @@ class MailgunEmail extends CoreEmail
      */
     public function enableTracking($track = true)
     {
-        $this->addHeaders(['X-Mailgun-Track' => $track ? 'yes' : 'no']);
+        $this->message->addHeaders(['X-Mailgun-Track' => $track ? 'yes' : 'no']);
 
         return $this;
     }
@@ -140,9 +140,9 @@ class MailgunEmail extends CoreEmail
     public function trackClicks($track = null)
     {
         if ($track === null) {
-            $this->addHeaders(['X-Mailgun-Track-Clicks' => 'htmlonly']);
+            $this->message->addHeaders(['X-Mailgun-Track-Clicks' => 'htmlonly']);
         } else {
-            $this->addHeaders(['X-Mailgun-Track-Clicks' => $track ? 'yes' : 'no']);
+            $this->message->addHeaders(['X-Mailgun-Track-Clicks' => $track ? 'yes' : 'no']);
         }
 
         return $this;
@@ -159,7 +159,7 @@ class MailgunEmail extends CoreEmail
      */
     public function trackOpens($track = false)
     {
-        $this->addHeaders(['X-Mailgun-Track-Opens' => $track ? 'yes' : 'no']);
+        $this->message->addHeaders(['X-Mailgun-Track-Opens' => $track ? 'yes' : 'no']);
 
         return $this;
     }
@@ -176,7 +176,7 @@ class MailgunEmail extends CoreEmail
      */
     public function requireTls($tls = false)
     {
-        $this->addHeaders(['X-Mailgun-Require-TLS' => $tls ? 'true' : 'false']);
+        $this->message->addHeaders(['X-Mailgun-Require-TLS' => $tls ? 'true' : 'false']);
 
         return $this;
     }
@@ -193,7 +193,7 @@ class MailgunEmail extends CoreEmail
      */
     public function skipVerification($verify = false)
     {
-        $this->addHeaders(['X-Mailgun-Skip-Verification' => $verify ? 'true' : 'false']);
+        $this->message->addHeaders(['X-Mailgun-Skip-Verification' => $verify ? 'true' : 'false']);
 
         return $this;
     }
@@ -209,7 +209,7 @@ class MailgunEmail extends CoreEmail
      */
     public function setRecipientVars(array $vars)
     {
-        $this->addHeaders(['X-Mailgun-Recipient-Variables' => json_encode($vars)]);
+        $this->message->addHeaders(['X-Mailgun-Recipient-Variables' => json_encode($vars)]);
 
         return $this;
     }
@@ -225,7 +225,7 @@ class MailgunEmail extends CoreEmail
      */
     public function setMailgunVars(array $vars)
     {
-        $this->addHeaders(['X-Mailgun-Variables' => $vars]);
+        $this->message->addHeaders(['X-Mailgun-Variables' => $vars]);
 
         return $this;
     }
