@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Mailgun Plugin for CakePHP 3
  * Copyright (c) Narendra Vaghela (http://www.narendravaghela.com)
@@ -20,7 +21,7 @@ use Cake\Http\Client;
 use Cake\Http\Client\FormData;
 use Cake\Http\Client\FormDataPart;
 use Cake\Mailer\AbstractTransport;
-use Cake\Mailer\Email;
+use Cake\Mailer\Message;
 use Mailgun\Mailer\Exception\MailgunApiException;
 
 /**
@@ -113,11 +114,11 @@ class MailgunTransport extends AbstractTransport
     /**
      * Send mail
      *
-     * @param \Cake\Mailer\Email $email Cake Email
+     * @param \Cake\Mailer\Message $message Cake Email
      * @return array An array with api response and email parameters
      * @throws MailgunApiException If api key or domain is not set
      */
-    public function send(Email $email)
+    public function send(Message $message): array
     {
         if (empty($this->getConfig('apiKey'))) {
             throw new MailgunApiException('Api Key for Mailgun could not found.');
@@ -127,20 +128,20 @@ class MailgunTransport extends AbstractTransport
             throw new MailgunApiException('Domain for Mailgun could not found.');
         }
 
-        $this->_prepareEmailAddresses($email);
+        $this->_prepareEmailAddresses($message);
 
-        $subject = new FormDataPart('subject', $email->getSubject());
+        $subject = new FormDataPart('subject', $message->getSubject());
         $this->_formData->add($subject);
 
-        $emailFormat = $email->getEmailFormat();
-        $this->_formData->add('html', trim($email->message(Email::MESSAGE_HTML)));
+        $emailFormat = $message->getEmailFormat();
+        $this->_formData->add('html', trim($message->getBodyHtml()));
         if ('both' == $emailFormat || 'text' == $emailFormat) {
-            $this->_formData->add('text', trim($email->message(Email::MESSAGE_TEXT)));
+            $this->_formData->add('text', trim($message->getBodyString()));
         }
 
-        $this->_processHeaders($email);
+        $this->_processHeaders($message);
 
-        $attachments = $email->getAttachments();
+        $attachments = $message->getAttachments();
         if (!empty($attachments)) {
             foreach ($attachments as $fileName => $attachment) {
                 if (empty($attachment['contentId'])) {
@@ -173,7 +174,7 @@ class MailgunTransport extends AbstractTransport
      * @param string $fileName Desired filename of the attachment
      * @return \Cake\Http\Client\FormDataPart
      */
-    protected function _addFile($partName, $attachment, $fileName = '')
+    protected function _addFile($partName, $attachment, $fileName = ''): \Cake\Http\Client\FormDataPart
     {
         if (isset($attachment['file'])) {
             $file = $this->_formData->addFile($partName, fopen($attachment['file'], 'r'));
@@ -190,179 +191,37 @@ class MailgunTransport extends AbstractTransport
     /**
      * Returns the parameters for API request.
      *
-     * @return array
+     * @return FormData
      */
-    public function getRequestData()
+    public function getRequestData(): FormData
     {
         return $this->_formData;
     }
 
     /**
-     * Sets additional option
-     *
-     * This will set extra option to use in message request
-     *
-     * Example
-     * ```
-     *  $email = new Email('mailgun');
-     *  $emailInstance = $email->getTransport();
-     *  $emailInstance->setOption('testmode', 'yes');
-     *  $emailInstance->setOption('tag', ['newsletter', 'monthly newsletter']);
-     *
-     *  $email->send();
-     * ```
-     *
-     * @see https://documentation.mailgun.com/en/latest/api-sending.html#sending
-     * @param string $name Name of option
-     * @param string|array $value Option value or array of values (string)
-     * @return $this
-     * @throws MailgunApiException If value is not a valid string or array
-     * @deprecated 4.0.0 Please use Mailgun\Mailer\MailgunEmail or Cake\Mailer\Email and set the X-Mailgun-* headers directly.
-     * @codeCoverageIgnore
-     */
-    public function setOption($name, $value)
-    {
-        deprecationWarning('setOption(): is deprecated please use Mailgun\Mailer\MailgunEmail or Cake\Mailer\Email and set the X-Mailgun-* headers directly.');
-
-        if (!in_array($name, $this->_allowedOptions)) {
-            throw new MailgunApiException("setOption(): {$name} is not a valid option name for Mailgun.");
-        }
-
-        if (is_array($value)) {
-            foreach ($value as $optionValue) {
-                $this->_formData->add("{$this->_optionPrefix}$name", (string)$optionValue);
-            }
-        } elseif (is_string($value) || is_numeric($value)) {
-            $this->_formData->add("{$this->_optionPrefix}$name", (string)$value);
-        } else {
-            throw new MailgunApiException("setOption(): Value of option must be a valid string or array.");
-        }
-
-        return $this;
-    }
-
-    /**
-     * Sets custom message variable
-     *
-     * This data will be passed as a header within the email, X-Mailgun-Variables
-     * The value must be a valid JSON string or array (will be convetred to JSON)
-     *
-     * Example
-     * ```
-     *  $email = new Email('mailgun');
-     *  $emailInstance = $email->getTransport();
-     *  $emailInstance->setCustomMessageData('my-custom-data', '{"my_message_id": 123}');
-     *
-     *  // or
-     *  $customMessageData = ['foo' => 'bar', 'john' => 'doe'];
-     *  $emailInstance->setCustomMessageData('my-custom-data', json_encode($customMessageData));
-     *
-     *  // or
-     *  $customMessageData = ['foo' => 'bar', 'john' => 'doe'];
-     *  $emailInstance->setCustomMessageData('my-custom-data', $customMessageData);
-     *
-     *  $email->send();
-     * ```
-     *
-     * @param string $name Variable name
-     * @param mixed $value A valid JSON string or array
-     * @return $this
-     * @throws MailgunApiException If value is not a valid JSON string
-     * @deprecated 4.0.0 Please use Mailgun\Mailer\MailgunEmail or Cake\Mailer\Email and set the X-Mailgun-* headers directly.
-     * @codeCoverageIgnore
-     */
-    public function setCustomMessageData($name, $value)
-    {
-        deprecationWarning('setCustomMessageData(): is deprecated please use Mailgun\Mailer\MailgunEmail or Cake\Mailer\Email and set the X-Mailgun-* headers directly.');
-
-        if (is_array($value)) {
-            $this->_formData->add("{$this->_varPrefix}$name", json_encode($value));
-        } elseif (is_string($value)) {
-            $decoded = json_decode($value);
-            if (!empty($decoded) && json_last_error() == JSON_ERROR_NONE) {
-                $this->_formData->add("{$this->_varPrefix}$name", $value);
-            } else {
-                throw new MailgunApiException("setCustomMessageData(): Value must be a valid JSON string or an array.");
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * Sets recipient variables
-     *
-     * This will set a JSON data to Mailgun message and will be replaced in
-     * message body of each recipient.
-     *
-     * Example
-     * ```
-     *  $email = new Email('mailgun');
-     *  $emailInstance = $email->getTransport();
-     *
-     *  $recipientData = [
-     *      'foo@example.com' => ['name' => 'Foo Bar'],
-     *      'john@example.com' => ['name' => 'John Doe'],
-     *  ];
-     *  $emailInstance->setRecipientVars($recipientData);
-     *
-     *  $email->send();
-     * ```
-     *
-     * In your message body, you can use %recipient.name% and it will be replaced
-     * by actual value passed in recipient variable.
-     *
-     * Note:
-     *  - Recipient's email address must be set as key of array
-     *  - You should set recipient variables in case of batch sending (multiple recipients)
-     *
-     * @param string|array $value A valid JSON string or array
-     * @return $this
-     * @deprecated 4.0.0 Please use Mailgun\Mailer\MailgunEmail or Cake\Mailer\Email and set the X-Mailgun-* headers directly.
-     * @codeCoverageIgnore
-     */
-    public function setRecipientVars($value)
-    {
-        deprecationWarning('setRecipientVars(): is deprecated please use Mailgun\Mailer\MailgunEmail or Cake\Mailer\Email and set the X-Mailgun-* headers directly.');
-
-        if (is_array($value)) {
-            $this->_formData->add("recipient-variables", json_encode($value));
-        } else {
-            $decoded = json_decode($value);
-            if (!empty($decoded) && json_last_error() == JSON_ERROR_NONE) {
-                $this->_formData->add("recipient-variables", $value);
-            } else {
-                throw new MailgunApiException("setRecipientVars(): Value must be a valid JSON string.");
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * Prepares the email addresses
      *
-     * @param \Cake\Mailer\Email $email Cake Email instance
+     * @param \Cake\Mailer\Message $message Cake Email instance
      * @return void
      */
-    protected function _prepareEmailAddresses(Email $email)
+    protected function _prepareEmailAddresses(Message $message): void
     {
-        $from = $email->getFrom();
+        $from = $message->getFrom();
         if (key($from) != $from[key($from)]) {
             $this->_formData->add('from', sprintf("%s <%s>", $from[key($from)], key($from)));
         } else {
             $this->_formData->add('from', sprintf("%s <%s>", key($from), key($from)));
         }
 
-        foreach ($email->getTo() as $toEmail => $toName) {
+        foreach ($message->getTo() as $toEmail => $toName) {
             $this->_formData->add('to', sprintf("%s <%s>", $toName, $toEmail));
         }
 
-        foreach ($email->getCc() as $ccEmail => $ccName) {
+        foreach ($message->getCc() as $ccEmail => $ccName) {
             $this->_formData->add('cc', sprintf("%s <%s>", $ccName, $ccEmail));
         }
 
-        foreach ($email->getBcc() as $bccEmail => $bccName) {
+        foreach ($message->getBcc() as $bccEmail => $bccName) {
             $this->_formData->add('bcc', sprintf("%s <%s>", $bccName, $bccEmail));
         }
     }
@@ -388,7 +247,7 @@ class MailgunTransport extends AbstractTransport
      *
      * @return void
      */
-    protected function _reset()
+    protected function _reset(): void
     {
         $this->_formData = new FormData();
     }
@@ -396,13 +255,13 @@ class MailgunTransport extends AbstractTransport
     /**
      * Process the Email headers and covert them to mailgun form parts
      *
-     * @param Email $email Email to work with
+     * @param \Cake\Mailer\Message $message Email to work with
      *
      * @return void
      */
-    protected function _processHeaders(Email $email)
+    protected function _processHeaders(Message $message): void
     {
-        $customHeaders = $email->getHeaders(['_headers']);
+        $customHeaders = $message->getHeaders(['_headers']);
         foreach ($customHeaders as $header => $value) {
             if (0 === strpos($header, $this->_mailgunHeaderPrefix) && !empty($value)) {
                 if ($header === $this->_mailgunHeaderPrefix . '-Recipient-Variables') {

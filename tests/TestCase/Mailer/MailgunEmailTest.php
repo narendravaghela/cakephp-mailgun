@@ -13,7 +13,7 @@ class MailgunEmailTest extends TestCase
      */
     public $Email;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -27,7 +27,7 @@ class MailgunEmailTest extends TestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         unset($this->Email);
 

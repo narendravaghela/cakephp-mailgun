@@ -1,9 +1,26 @@
 <?php
+declare(strict_types=1);
+
 namespace Mailgun\Mailer;
 
 use Cake\Mailer\Email as CoreEmail;
 use Mailgun\Mailer\Exception\MailgunApiException;
 
+/**
+ * CakePHP Email class.
+ *
+ * This class is used for sending Internet Message Format based
+ * on the standard outlined in https://www.rfc-editor.org/rfc/rfc2822.txt
+ *
+ * ### Configuration
+ *
+ * Configuration for Email is managed by Email::config() and Email::configTransport().
+ * Email::config() can be used to add or read a configuration profile for Email instances.
+ * Once made configuration profiles can be used to re-use across various email messages your
+ * application sends.
+ *
+ * @deprecated 5.0.0 This class will be removed in CakePHP 5.0 and cakephp-mailgun 6.0, use Mailgun\Mailer\Mailer instead.
+ */
 class MailgunEmail extends CoreEmail
 {
     const TIMEFORMAT = 'D, d M Y H:i:s O';

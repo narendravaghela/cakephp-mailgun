@@ -25,7 +25,7 @@ use Mailgun\Mailer\Transport\MailgunTransport;
 class MailgunTransportTest extends TestCase
 {
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
