@@ -14,8 +14,8 @@ This plugin provides email delivery using [Mailgun API](https://www.mailgun.com/
 
 This plugin has the following requirements:
 
-* CakePHP 3.7.0 or greater.
-* PHP 5.6 or greater.
+* CakePHP 4.0.0 or greater.
+* PHP 7.2 or greater.
 
 ## Installation
 
