@@ -154,16 +154,18 @@ class MailgunTransport extends AbstractTransport
             }
         }
 
-        $apiResponse = $this->_sendEmail();
-        $res = ['apiResponse' => $apiResponse];
+        try {
+            $apiResponse = $this->_sendEmail();
+            $res = ['apiResponse' => $apiResponse];
 
-        if (Configure::read('debug')) {
-            $res['reqData'] = $this->_formData;
+            if (Configure::read('debug')) {
+                $res['reqData'] = $this->_formData;
+            }
+
+            return $res;
+        } finally {
+            $this->_reset();
         }
-
-        $this->_reset();
-
-        return $res;
     }
 
     /**
