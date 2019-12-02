@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Mailgun Plugin for CakePHP 3
  * Copyright (c) Narendra Vaghela (http://www.narendravaghela.com)
@@ -20,11 +22,9 @@ use Cake\Mailer\Email;
 use Cake\Mailer\TransportFactory;
 use Cake\TestSuite\TestCase;
 use Mailgun\Mailer\MailgunEmail;
-use Mailgun\Mailer\Transport\MailgunTransport;
 
 class MailgunTransportTest extends TestCase
 {
-
     public function setUp(): void
     {
         parent::setUp();
@@ -123,7 +123,7 @@ class MailgunTransportTest extends TestCase
             ->setTo('to@example.com')
             ->setAttachments([
                 'logo.png' => ['file' => TESTS . DS . 'assets' . DS . 'logo.png', 'contentId' => 'logo.png'],
-                'cake.power.gif' => ['file' => TESTS . DS . 'assets' . DS . 'cake.power.gif']
+                'cake.power.gif' => ['file' => TESTS . DS . 'assets' . DS . 'cake.power.gif'],
             ])
             ->setSubject('Email from CakePHP Mailgun plugin')
             ->send('Hello there, <br> This is an email from CakePHP Mailgun Email plugin.');

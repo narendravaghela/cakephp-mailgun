@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Mailgun Plugin for CakePHP 3
  * Copyright (c) Narendra Vaghela (http://www.narendravaghela.com)
@@ -22,5 +24,4 @@ use Cake\Core\BasePlugin;
  */
 class Plugin extends BasePlugin
 {
-
 }

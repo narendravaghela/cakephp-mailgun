@@ -23,7 +23,7 @@ use Mailgun\Mailer\Exception\MailgunApiException;
  */
 class MailgunEmail extends CoreEmail
 {
-    const TIMEFORMAT = 'D, d M Y H:i:s O';
+    public const TIMEFORMAT = 'D, d M Y H:i:s O';
 
     /**
      * Constructor

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Mailgun\Test\TestCase\Mailer;
 
 use Cake\Core\Configure;
@@ -244,8 +246,8 @@ class MailgunEmailTest extends TestCase
         $vars = [
             'email@example.com' => [
                 'var1' => true,
-                'var2' => 'string'
-            ]
+                'var2' => 'string',
+            ],
         ];
 
         $this->Email->setRecipientVars($vars);
@@ -259,7 +261,7 @@ class MailgunEmailTest extends TestCase
     {
         $vars = [
             'var1' => true,
-            'var2' => 'string'
+            'var2' => 'string',
         ];
 
         $this->Email->setMailgunVars($vars);
