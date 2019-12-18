@@ -155,14 +155,7 @@ class MailgunTransport extends AbstractTransport
         }
 
         try {
-            $apiResponse = $this->_sendEmail();
-            $res = ['apiResponse' => $apiResponse];
-
-            if (Configure::read('debug')) {
-                $res['reqData'] = $this->_formData;
-            }
-
-            return $res;
+            return $this->_sendEmail();
         } finally {
             $this->_reset();
         }
@@ -245,7 +238,13 @@ class MailgunTransport extends AbstractTransport
             ]
         );
 
-        return $response->getJson();
+        $result = [];
+        $result['apiResponse'] = $response->getJson();
+        $result['responseCode'] = $response->getStatusCode();
+        if (Configure::read('debug')) {
+            $result['reqData'] = $this->_formData;
+        }
+        return $result;
     }
 
     /**
@@ -284,18 +283,12 @@ class MailgunTransport extends AbstractTransport
                     $var = $this->_mailgunHeaders[$header];
                     if (is_string($value)) {
                         $value = json_decode($value);
-                        if (json_last_error() === JSON_ERROR_NONE && is_string($value)) {
-                            $value = explode(',', $value);
-                        }
                     }
                     $this->_formData->add("{$this->_optionPrefix}$var", $value);
                 } else {
                     $var = $this->_mailgunHeaders[$header];
                     $this->_formData->add("{$this->_optionPrefix}$var", $value);
                 }
-            }
-            if (strpos($header, $this->_customHeaderPrefix) === 0 && !empty($value)) {
-                $this->_formData->add($header, $value);
             }
         }
     }
