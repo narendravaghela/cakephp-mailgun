@@ -275,9 +275,9 @@ class MailgunTransportTest extends TestCase
     {
         $this->_setBlankApiEmailConfig();
         $res = $this->_sendEmail();
-        $apiResponse = $res['apiResponse'];
 
-        $this->assertNull($apiResponse);
+        $this->assertNull($res['apiResponse']);
+        $this->assertSame(401, $res['responseCode']);
     }
 
     public function testInvalidDomainKey()
