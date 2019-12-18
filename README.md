@@ -24,7 +24,7 @@ This plugin has the following requirements:
 You can install this plugin into your CakePHP application using [composer](http://getcomposer.org).
 
 ```ssh
-composer require narendravaghela/cakephp-mailgun
+composer require narendravaghela/cakephp-mailgun "^5.0"
 ```
 
 After installation, [Load the plugin](https://book.cakephp.org/3.0/en/plugins.html#loading-a-plugin)
@@ -263,6 +263,7 @@ $email->skipVerification();
 ## Versions
 This plugin has several releases. Please use the appropriate version by downloading a tag, or checking out the correct branch.
 
+ - `5.x` are compatible with CakePHP 4.0.x and greater. It is now under active development.
  - `4.x` are compatible with CakePHP 3.7.x and greater. It is now under active development.
  - `3.x` are compatible with CakePHP 3.7.x and greater. Only bug fixes will be applied to this.
  - `1.x` are compatible with older CakePHP 3 releases. Only bug fixes will be applied to this.
