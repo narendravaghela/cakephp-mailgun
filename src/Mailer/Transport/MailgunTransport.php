@@ -244,6 +244,7 @@ class MailgunTransport extends AbstractTransport
         if (Configure::read('debug')) {
             $result['reqData'] = $this->_formData;
         }
+
         return $result;
     }
 
