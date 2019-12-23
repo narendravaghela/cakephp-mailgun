@@ -290,6 +290,8 @@ class MailgunTransport extends AbstractTransport
                     $var = $this->_mailgunHeaders[$header];
                     $this->_formData->add("{$this->_optionPrefix}$var", $value);
                 }
+            } elseif (0 === strpos($header, $this->_customHeaderPrefix) && !empty($value)) {
+                $this->_formData->add($header, $value);
             }
         }
     }
