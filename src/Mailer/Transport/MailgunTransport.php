@@ -436,6 +436,8 @@ class MailgunTransport extends AbstractTransport
                 }
             } elseif (0 === strpos($header, $this->_customHeaderPrefix) && !empty($value)) {
                 $this->_formData->add($header, $value);
+            } else {
+                $this->_formData->add($this->_customHeaderPrefix . $header, $value);
             }
         }
     }
