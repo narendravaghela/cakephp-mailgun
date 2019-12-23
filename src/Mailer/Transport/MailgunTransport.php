@@ -7,7 +7,7 @@
  * For full copyright and license information, please see the LICENSE.md
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright Copyright (c) Narendra Vaghela (http://www.narendravaghela.com)
+ * @copyright 2020 Copyright (c) Narendra Vaghela (http://www.narendravaghela.com)
  * @license   https://opensource.org/licenses/mit-license.php MIT License
  * @link      https://github.com/narendravaghela/cakephp-mailgun
  * @since     1.0.0
@@ -57,8 +57,14 @@ class MailgunTransport extends AbstractTransport
         'skip-verification',
     ];
 
+    /**
+     * @var string
+     */
     protected $_mailgunHeaderPrefix = 'X-Mailgun';
 
+    /**
+     * @var array
+     */
     protected $_mailgunHeaders = [
         'X-Mailgun-Tag' => 'tag',
         'X-Mailgun-Dkim' => 'dkim',
@@ -428,6 +434,8 @@ class MailgunTransport extends AbstractTransport
                     $var = $this->_mailgunHeaders[$header];
                     $this->_formData->add("{$this->_optionPrefix}$var", $value);
                 }
+            } elseif (0 === strpos($header, $this->_customHeaderPrefix) && !empty($value)) {
+                $this->_formData->add($header, $value);
             }
         }
     }
