@@ -164,6 +164,8 @@ class MailgunTransport extends AbstractTransport
 
         try {
             return $this->_sendEmail();
+        } catch (MailgunApiException $e) {
+            throw $e;
         } finally {
             $this->_reset();
         }
