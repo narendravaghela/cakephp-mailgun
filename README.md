@@ -1,4 +1,4 @@
-# Mailgun Plugin for CakePHP 3
+# Mailgun Plugin for CakePHP 3.7 and 4.0
 
 [![Build Status](https://travis-ci.org/narendravaghela/cakephp-mailgun.svg?branch=master)](https://travis-ci.org/narendravaghela/cakephp-mailgun)
 [![codecov](https://codecov.io/gh/narendravaghela/cakephp-mailgun/branch/master/graph/badge.svg)](https://codecov.io/gh/narendravaghela/cakephp-mailgun)
