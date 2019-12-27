@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Mailgun Plugin for CakePHP 4
+ * Mailgun Plugin for CakePHP
  * Copyright (c) Narendra Vaghela (http://www.narendravaghela.com)
  *
  * Licensed under The MIT License
