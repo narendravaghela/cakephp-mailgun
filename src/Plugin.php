@@ -24,4 +24,8 @@ use Cake\Core\BasePlugin;
  */
 class Plugin extends BasePlugin
 {
+    /**
+     * @var string Timeformat to use
+     */
+    public const TIMEFORMAT = 'D, d M Y H:i:s O';
 }

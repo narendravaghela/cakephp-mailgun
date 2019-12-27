@@ -27,7 +27,7 @@ You can install this plugin into your CakePHP application using [composer](http:
 composer require narendravaghela/cakephp-mailgun "^5.0"
 ```
 
-After installation, [Load the plugin](https://book.cakephp.org/3.0/en/plugins.html#loading-a-plugin)
+After installation, [Load the plugin](https://book.cakephp.org/4.0/en/plugins.html#loading-a-plugin)
 ```sh
 $ bin/cake plugin load Mailgun
 ```

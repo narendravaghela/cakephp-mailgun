@@ -6,7 +6,10 @@ namespace Mailgun\Test\TestCase\Mailer;
 use Cake\Core\Configure;
 use Cake\Mailer\TransportFactory;
 use Cake\TestSuite\TestCase;
+use DateInterval;
+use DateTime;
 use Mailgun\Mailer\MailgunEmail;
+use Mailgun\Plugin;
 
 class MailgunEmailTest extends TestCase
 {
@@ -20,7 +23,8 @@ class MailgunEmailTest extends TestCase
         parent::setUp();
 
         Configure::write('DebugKit.panels', ['DebugKit.Mail' => false]);
-        $this->_setEmailConfig();
+        TransportFactory::drop('mailgun');
+        TransportFactory::setConfig('mailgun', ['className' => 'Mailgun.Mailgun', 'apiKey' => 'xxxxxxx-test-xxxxxxx', 'domain' => 'xxxxxxx-test.mailgun.org']);
         $this->Email = new MailgunEmail();
     }
 
@@ -36,15 +40,15 @@ class MailgunEmailTest extends TestCase
         parent::tearDown();
     }
 
-    public function testTagsArray()
+    public function testTagsArray(): void
     {
         $tags = ['tag1', 'tag2', 'tag3'];
         $this->Email->setTags($tags);
-        $headers = $this->Email->getHeaders(['X-Mailgun-Tag']);
+        $headers = $this->Email->getMessage()->getHeaders(['X-Mailgun-Tag']);
         $this->assertEquals(json_encode($tags), $headers['X-Mailgun-Tag']);
     }
 
-    public function testTagsArrayMoreThanThree()
+    public function testTagsArrayMoreThanThree(): void
     {
         $this->expectException('Mailgun\Mailer\Exception\MailgunApiException');
         $this->expectExceptionMessage('You can only set a max of 3 tags.');
@@ -52,16 +56,16 @@ class MailgunEmailTest extends TestCase
         $this->Email->setTags(['tag1', 'tag2', 'tag3', 'tag4']);
     }
 
-    public function testTagString()
+    public function testTagString(): void
     {
         $this->Email->setTags('tag1,tag2,tag3');
-        $headers = $this->Email->getHeaders(['X-Mailgun-Tag']);
+        $headers = $this->Email->getMessage()->getHeaders(['X-Mailgun-Tag']);
         $expected = json_encode(['tag1', 'tag2', 'tag3']);
 
         $this->assertEquals($expected, $headers['X-Mailgun-Tag']);
     }
 
-    public function testTagsStringMoreThanThree()
+    public function testTagsStringMoreThanThree(): void
     {
         $this->expectException('Mailgun\Mailer\Exception\MailgunApiException');
         $this->expectExceptionMessage('You can only set a max of 3 tags.');
@@ -69,179 +73,177 @@ class MailgunEmailTest extends TestCase
         $this->Email->setTags('tag1,tag2,tag3,tag4');
     }
 
-    public function testEnableDkimTrue()
+    public function testEnableDkimTrue(): void
     {
         $this->Email->enableDkim();
 
-        $headers = $this->Email->getHeaders(['X-Mailgun-Dkim']);
+        $headers = $this->Email->getMessage()->getHeaders(['X-Mailgun-Dkim']);
         $expected = 'yes';
 
         $this->assertEquals($expected, $headers['X-Mailgun-Dkim']);
     }
 
-    public function testEnableDkimFalse()
+    public function testEnableDkimFalse(): void
     {
         $this->Email->enableDkim(false);
 
-        $headers = $this->Email->getHeaders(['X-Mailgun-Dkim']);
+        $headers = $this->Email->getMessage()->getHeaders(['X-Mailgun-Dkim']);
         $expected = 'no';
 
         $this->assertEquals($expected, $headers['X-Mailgun-Dkim']);
     }
 
-    public function testDeliverBy()
+    public function testDeliverBy(): void
     {
-        $time = new \DateTime();
+        $time = new DateTime();
         $this->Email->deliverBy($time);
 
-        $headers = $this->Email->getHeaders(['X-Mailgun-Deliver-By']);
-        $expected = $time->format(MailgunEmail::TIMEFORMAT);
+        $headers = $this->Email->getMessage()->getHeaders(['X-Mailgun-Deliver-By']);
+        $expected = $time->format(Plugin::TIMEFORMAT);
 
         $this->assertEquals($expected, $headers['X-Mailgun-Deliver-By']);
     }
 
-    public function testDeliverByFourDaysInFuture()
+    public function testDeliverByFourDaysInFuture(): void
     {
         $this->expectException('Mailgun\Mailer\Exception\MailgunApiException');
         $this->expectExceptionMessage('Delivery date can only be max of 3 days in the future.');
 
-        $time = (new \DateTime())->add(new \DateInterval('P4D'));
+        $time = (new DateTime())->add(new DateInterval('P4D'));
         $this->Email->deliverBy($time);
-
-        $headers = $this->Email->getHeaders(['X-Mailgun-Deliver-By']);
     }
 
-    public function testTestModeTrue()
+    public function testTestModeTrue(): void
     {
         $this->Email->testMode();
 
-        $headers = $this->Email->getHeaders(['X-Mailgun-Drop-Message']);
+        $headers = $this->Email->getMessage()->getHeaders(['X-Mailgun-Drop-Message']);
         $expected = 'yes';
 
         $this->assertEquals($expected, $headers['X-Mailgun-Drop-Message']);
     }
 
-    public function testTestModeFalse()
+    public function testTestModeFalse(): void
     {
         $this->Email->testMode(false);
 
-        $headers = $this->Email->getHeaders(['X-Mailgun-Drop-Message']);
+        $headers = $this->Email->getMessage()->getHeaders(['X-Mailgun-Drop-Message']);
         $expected = 'no';
 
         $this->assertEquals($expected, $headers['X-Mailgun-Drop-Message']);
     }
 
-    public function testTrackTrue()
+    public function testTrackTrue(): void
     {
         $this->Email->enableTracking();
 
-        $headers = $this->Email->getHeaders(['X-Mailgun-Track']);
+        $headers = $this->Email->getMessage()->getHeaders(['X-Mailgun-Track']);
         $expected = 'yes';
 
         $this->assertEquals($expected, $headers['X-Mailgun-Track']);
     }
 
-    public function testTrackFalse()
+    public function testTrackFalse(): void
     {
         $this->Email->enableTracking(false);
 
-        $headers = $this->Email->getHeaders(['X-Mailgun-Track']);
+        $headers = $this->Email->getMessage()->getHeaders(['X-Mailgun-Track']);
         $expected = 'no';
 
         $this->assertEquals($expected, $headers['X-Mailgun-Track']);
     }
 
-    public function testTrackClicksHtmlOnly()
+    public function testTrackClicksHtmlOnly(): void
     {
         $this->Email->trackClicks();
 
-        $headers = $this->Email->getHeaders(['X-Mailgun-Track-Clicks']);
+        $headers = $this->Email->getMessage()->getHeaders(['X-Mailgun-Track-Clicks']);
         $expected = 'htmlonly';
 
         $this->assertEquals($expected, $headers['X-Mailgun-Track-Clicks']);
     }
 
-    public function testTrackClicksTrue()
+    public function testTrackClicksTrue(): void
     {
         $this->Email->trackClicks(true);
 
-        $headers = $this->Email->getHeaders(['X-Mailgun-Track-Clicks']);
+        $headers = $this->Email->getMessage()->getHeaders(['X-Mailgun-Track-Clicks']);
         $expected = 'yes';
 
         $this->assertEquals($expected, $headers['X-Mailgun-Track-Clicks']);
     }
 
-    public function testTrackClicksFalse()
+    public function testTrackClicksFalse(): void
     {
         $this->Email->trackClicks(false);
 
-        $headers = $this->Email->getHeaders(['X-Mailgun-Track-Clicks']);
+        $headers = $this->Email->getMessage()->getHeaders(['X-Mailgun-Track-Clicks']);
         $expected = 'no';
 
         $this->assertEquals($expected, $headers['X-Mailgun-Track-Clicks']);
     }
 
-    public function testTrackOpensTrue()
+    public function testTrackOpensTrue(): void
     {
         $this->Email->trackOpens(true);
 
-        $headers = $this->Email->getHeaders(['X-Mailgun-Track-Opens']);
+        $headers = $this->Email->getMessage()->getHeaders(['X-Mailgun-Track-Opens']);
         $expected = 'yes';
 
         $this->assertEquals($expected, $headers['X-Mailgun-Track-Opens']);
     }
 
-    public function testTrackOpenFalse()
+    public function testTrackOpenFalse(): void
     {
         $this->Email->trackOpens(false);
 
-        $headers = $this->Email->getHeaders(['X-Mailgun-Track-Opens']);
+        $headers = $this->Email->getMessage()->getHeaders(['X-Mailgun-Track-Opens']);
         $expected = 'no';
 
         $this->assertEquals($expected, $headers['X-Mailgun-Track-Opens']);
     }
 
-    public function testRequireTlsFalse()
+    public function testRequireTlsFalse(): void
     {
         $this->Email->requireTls();
 
-        $headers = $this->Email->getHeaders(['X-Mailgun-Require-TLS']);
+        $headers = $this->Email->getMessage()->getHeaders(['X-Mailgun-Require-TLS']);
         $expected = 'false';
 
         $this->assertEquals($expected, $headers['X-Mailgun-Require-TLS']);
     }
 
-    public function testRequireTlsTrue()
+    public function testRequireTlsTrue(): void
     {
         $this->Email->requireTls(true);
 
-        $headers = $this->Email->getHeaders(['X-Mailgun-Require-TLS']);
+        $headers = $this->Email->getMessage()->getHeaders(['X-Mailgun-Require-TLS']);
         $expected = 'true';
 
         $this->assertEquals($expected, $headers['X-Mailgun-Require-TLS']);
     }
 
-    public function testSkipVerificationFalse()
+    public function testSkipVerificationFalse(): void
     {
         $this->Email->skipVerification();
 
-        $headers = $this->Email->getHeaders(['X-Mailgun-Skip-Verification']);
+        $headers = $this->Email->getMessage()->getHeaders(['X-Mailgun-Skip-Verification']);
         $expected = 'false';
 
         $this->assertEquals($expected, $headers['X-Mailgun-Skip-Verification']);
     }
 
-    public function testSkipVerificationTrue()
+    public function testSkipVerificationTrue(): void
     {
         $this->Email->skipVerification(true);
 
-        $headers = $this->Email->getHeaders(['X-Mailgun-Skip-Verification']);
+        $headers = $this->Email->getMessage()->getHeaders(['X-Mailgun-Skip-Verification']);
         $expected = 'true';
 
         $this->assertEquals($expected, $headers['X-Mailgun-Skip-Verification']);
     }
 
-    public function testRecipientVars()
+    public function testRecipientVars(): void
     {
         $vars = [
             'email@example.com' => [
@@ -252,12 +254,12 @@ class MailgunEmailTest extends TestCase
 
         $this->Email->setRecipientVars($vars);
 
-        $headers = $this->Email->getHeaders(['X-Mailgun-Recipient-Variables']);
+        $headers = $this->Email->getMessage()->getHeaders(['X-Mailgun-Recipient-Variables']);
         $expected = json_encode($vars);
         $this->assertEquals($expected, $headers['X-Mailgun-Recipient-Variables']);
     }
 
-    public function testMailgunVars()
+    public function testMailgunVars(): void
     {
         $vars = [
             'var1' => true,
@@ -266,13 +268,7 @@ class MailgunEmailTest extends TestCase
 
         $this->Email->setMailgunVars($vars);
 
-        $headers = $this->Email->getHeaders(['X-Mailgun-Variables']);
+        $headers = $this->Email->getMessage()->getHeaders(['X-Mailgun-Variables']);
         $this->assertEquals($vars, $headers['X-Mailgun-Variables']);
-    }
-
-    protected function _setEmailConfig()
-    {
-        TransportFactory::drop('mailgun');
-        TransportFactory::setConfig('mailgun', ['className' => 'Mailgun.Mailgun', 'apiKey' => 'xxxxxxx-test-xxxxxxx', 'domain' => 'xxxxxxx-test.mailgun.org']);
     }
 }

@@ -101,6 +101,11 @@ class MailgunTransport extends AbstractTransport
     protected $_formData;
 
     /**
+     * @var \Cake\Http\Client HTTP Client to use
+     */
+    public $Client;
+
+    /**
      * Constructor
      *
      * @param array $config Configuration options.
@@ -109,14 +114,17 @@ class MailgunTransport extends AbstractTransport
     {
         parent::__construct($config);
         $this->_formData = new FormData();
+        $this->Client = new Client();
     }
 
     /**
      * Send mail
      *
      * @param \Cake\Mailer\Message $message Cake Email
+     *
      * @return array An array with api response and email parameters
-     * @throws \Mailgun\Mailer\Exception\MailgunApiException If api key or domain is not set
+     *
+     * @throws \Mailgun\Mailer\Exception\MailgunApiException If api key, domain, or from address is not set
      */
     public function send(Message $message): array
     {
@@ -145,9 +153,9 @@ class MailgunTransport extends AbstractTransport
         if (!empty($attachments)) {
             foreach ($attachments as $fileName => $attachment) {
                 if (empty($attachment['contentId'])) {
-                    $file = $this->_addFile('attachment', $attachment, $fileName);
+                    $file = $this->_addFile('attachment', $attachment, (string)$fileName);
                 } else {
-                    $file = $this->_addFile('inline', $attachment, $fileName);
+                    $file = $this->_addFile('inline', $attachment, (string)$fileName);
                     $file->contentId($attachment['contentId']);
                 }
                 $file->disposition('attachment');
@@ -174,7 +182,7 @@ class MailgunTransport extends AbstractTransport
         if (isset($attachment['file'])) {
             $file = $this->_formData->addFile($partName, fopen($attachment['file'], 'r'));
         } else {
-            $file = $this->_formData->newPart($partName, base64_decode($attachment['data']));
+            $file = $this->_formData->newPart($partName, (string)base64_decode($attachment['data']));
             $file->type($attachment['mimetype']);
             $file->filename($fileName);
             $this->_formData->add($file);
@@ -202,6 +210,9 @@ class MailgunTransport extends AbstractTransport
     protected function _prepareEmailAddresses(Message $message): void
     {
         $from = $message->getFrom();
+        if (empty($from)) {
+            throw new MailgunApiException('Missing from email address.');
+        }
         if (key($from) != $from[key($from)]) {
             $this->_formData->add('from', sprintf("%s <%s>", $from[key($from)], key($from)));
         } else {
@@ -228,8 +239,7 @@ class MailgunTransport extends AbstractTransport
      */
     protected function _sendEmail()
     {
-        $http = new Client();
-        $response = $http->post(
+        $response = $this->Client->post(
             "{$this->getConfig('apiEndpoint')}/{$this->getConfig('domain')}/messages",
             (string)$this->_formData,
             [
@@ -237,6 +247,10 @@ class MailgunTransport extends AbstractTransport
                 'headers' => ['Content-Type' => $this->_formData->contentType()],
             ]
         );
+
+        if (!$response->isSuccess()) {
+            throw new MailgunApiException($response->getStringBody(), $response->getStatusCode());
+        }
 
         $result = [];
         $result['apiResponse'] = $response->getJson();
