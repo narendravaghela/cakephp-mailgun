@@ -1,3 +1,4 @@
+# OUTDATED
 # Upgrade from 1.x to 3.x
 The release `3.0.0` is a major rewrite of `1.x` with some breaking changes. If you are upgrading to `3.x`, please follow the read the below points and update your codebase.
 
