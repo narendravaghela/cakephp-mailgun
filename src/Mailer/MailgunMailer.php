@@ -22,4 +22,16 @@ use Cake\Mailer\Mailer;
 class MailgunMailer extends Mailer
 {
     use MailgunTrait;
+
+    /**
+     * Constructor
+     *
+     * @param array|string|null $config Array of configs, or string to load configs from app.php
+     */
+    public function __construct($config = null)
+    {
+        parent::__construct($config);
+
+        $this->setTransport('mailgun');
+    }
 }
