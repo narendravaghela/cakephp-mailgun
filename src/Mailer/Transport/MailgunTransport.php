@@ -37,7 +37,7 @@ class MailgunTransport extends AbstractTransport
     protected $_defaultConfig = [
         'apiEndpoint' => 'https://api.mailgun.net/v3',
         'domain' => '',
-        'apiKey' => ''
+        'apiKey' => '',
     ];
 
     /**
@@ -54,7 +54,7 @@ class MailgunTransport extends AbstractTransport
         'tracking-clicks',
         'tracking-opens',
         'require-tls',
-        'skip-verification'
+        'skip-verification',
     ];
 
     /**
@@ -360,7 +360,7 @@ class MailgunTransport extends AbstractTransport
         $http = new Client();
         $response = $http->post("{$this->getConfig('apiEndpoint')}/{$this->getConfig('domain')}/messages", (string)$this->_formData, [
             'auth' => ['username' => 'api', 'password' => $this->getConfig('apiKey')],
-            'headers' => ['Content-Type' => $this->_formData->contentType()]
+            'headers' => ['Content-Type' => $this->_formData->contentType()],
         ]);
 
         return $response->getJson();
