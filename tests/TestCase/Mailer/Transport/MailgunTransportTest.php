@@ -116,7 +116,7 @@ class MailgunTransportTest extends TestCase
             ->setTo('to@example.com')
             ->setAttachments([
                 'logo.png' => ['file' => TESTS . DS . 'assets' . DS . 'logo.png', 'contentId' => 'logo.png'],
-                'cake.power.gif' => ['file' => TESTS . DS . 'assets' . DS . 'cake.power.gif']
+                'cake.power.gif' => ['file' => TESTS . DS . 'assets' . DS . 'cake.power.gif'],
             ])
             ->setSubject('Email from CakePHP Mailgun plugin')
             ->send('Hello there, <br> This is an email from CakePHP Mailgun Email plugin.');
