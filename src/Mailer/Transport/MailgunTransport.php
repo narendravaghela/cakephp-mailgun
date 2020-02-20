@@ -344,7 +344,7 @@ class MailgunTransport extends AbstractTransport
         foreach ($email->getBcc() as $bccEmail => $bccName) {
             $this->_formData->add('bcc', sprintf("%s <%s>", $bccName, $bccEmail));
         }
-        
+
         foreach ($email->getReplyTo() as $replyToEmail => $replyToName) {
             $this->_formData->add('h:Reply-To', sprintf("%s <%s>", $replyToName, $replyToEmail));
         }
