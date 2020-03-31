@@ -116,7 +116,7 @@ class MailgunTransportTest extends TestCase
             ->setSubject('Email from CakePHP Mailgun plugin');
         $this->MailgunTransport->send($message);
 
-        $reqData = $reqData = $this->MailgunTransport->getRequestData();
+        $reqData = $this->MailgunTransport->getRequestData();
         $boundary = $reqData->boundary();
         $reqDataString = (string)$reqData;
 
