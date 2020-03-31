@@ -58,8 +58,14 @@ class MailgunTransport extends AbstractTransport
         'skip-verification',
     ];
 
+    /**
+     * @var string Mailgun header prefix
+     */
     protected $_mailgunHeaderPrefix = 'X-Mailgun';
 
+    /**
+     * @var array Valid mailgun headers
+     */
     protected $_mailgunHeaders = [
         'X-Mailgun-Tag' => 'tag',
         'X-Mailgun-Dkim' => 'dkim',

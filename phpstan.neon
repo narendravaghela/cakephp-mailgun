@@ -2,5 +2,6 @@ parameters:
     level: 7
     autoload_files:
         - tests/bootstrap.php
+    checkMissingIterableValueType: false
     ignoreErrors:
         - "#Argument of an invalid type string supplied for foreach, only iterables are supported.#"
