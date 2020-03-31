@@ -135,9 +135,9 @@ class MailgunTransport extends AbstractTransport
         if (!empty($attachments)) {
             foreach ($attachments as $fileName => $attachment) {
                 if (empty($attachment['contentId'])) {
-                    $file = $this->_addFile('attachment', $attachment, $fileName);
+                    $file = $this->_addFile('attachment', $attachment, (string)$fileName);
                 } else {
-                    $file = $this->_addFile('inline', $attachment, $fileName);
+                    $file = $this->_addFile('inline', $attachment, (string)$fileName);
                     $file->contentId($attachment['contentId']);
                 }
                 $file->disposition('attachment');
@@ -181,7 +181,7 @@ class MailgunTransport extends AbstractTransport
     /**
      * Returns the parameters for API request.
      *
-     * @return array
+     * @return \Cake\Http\Client\FormData
      */
     public function getRequestData()
     {

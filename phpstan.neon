@@ -1,0 +1,8 @@
+parameters:
+    level: 7
+    checkMissingIterableValueType: false
+    autoload_files:
+        - tests/bootstrap.php
+    ignoreErrors:
+            - '#Parameter \#1 \$str of function trim expects string, array\|string given.#'
+            - '#Result of \|\| is always true.#'
