@@ -37,7 +37,7 @@ class MailgunTransport extends AbstractTransport
     protected $_defaultConfig = [
         'apiEndpoint' => 'https://api.mailgun.net/v3',
         'domain' => '',
-        'apiKey' => ''
+        'apiKey' => '',
     ];
 
     /**
@@ -54,7 +54,7 @@ class MailgunTransport extends AbstractTransport
         'tracking-clicks',
         'tracking-opens',
         'require-tls',
-        'skip-verification'
+        'skip-verification',
     ];
 
     /**
@@ -135,9 +135,9 @@ class MailgunTransport extends AbstractTransport
         if (!empty($attachments)) {
             foreach ($attachments as $fileName => $attachment) {
                 if (empty($attachment['contentId'])) {
-                    $file = $this->_addFile('attachment', $attachment, $fileName);
+                    $file = $this->_addFile('attachment', $attachment, (string)$fileName);
                 } else {
-                    $file = $this->_addFile('inline', $attachment, $fileName);
+                    $file = $this->_addFile('inline', $attachment, (string)$fileName);
                     $file->contentId($attachment['contentId']);
                 }
                 $file->disposition('attachment');
@@ -181,7 +181,7 @@ class MailgunTransport extends AbstractTransport
     /**
      * Returns the parameters for API request.
      *
-     * @return array
+     * @return \Cake\Http\Client\FormData
      */
     public function getRequestData()
     {
@@ -344,6 +344,10 @@ class MailgunTransport extends AbstractTransport
         foreach ($email->getBcc() as $bccEmail => $bccName) {
             $this->_formData->add('bcc', sprintf("%s <%s>", $bccName, $bccEmail));
         }
+
+        foreach ($email->getReplyTo() as $replyToEmail => $replyToName) {
+            $this->_formData->add('h:Reply-To', sprintf("%s <%s>", $replyToName, $replyToEmail));
+        }
     }
 
     /**
@@ -356,7 +360,7 @@ class MailgunTransport extends AbstractTransport
         $http = new Client();
         $response = $http->post("{$this->getConfig('apiEndpoint')}/{$this->getConfig('domain')}/messages", (string)$this->_formData, [
             'auth' => ['username' => 'api', 'password' => $this->getConfig('apiKey')],
-            'headers' => ['Content-Type' => $this->_formData->contentType()]
+            'headers' => ['Content-Type' => $this->_formData->contentType()],
         ]);
 
         return $response->getJson();

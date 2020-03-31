@@ -85,6 +85,7 @@ class MailgunTransportTest extends TestCase
             ->setTo('to@example.com')
             ->addCC(['ccbar@example.com', 'ccjohn@example.com' => 'John'])
             ->addBcc(['bccbar@example.com', 'bccjohn@example.com' => 'John'])
+            ->setReplyTo(['replyto@example.com' => 'John'])
             ->setEmailFormat('both')
             ->setSubject('Email from CakePHP Mailgun plugin')
             ->send('Hello there, <br> This is an email from CakePHP Mailgun Email plugin.');
@@ -99,12 +100,35 @@ class MailgunTransportTest extends TestCase
         $this->assertTextContains('Content-Disposition: form-data; name="to"', $reqDataString);
         $this->assertTextContains('Content-Disposition: form-data; name="cc"', $reqDataString);
         $this->assertTextContains('Content-Disposition: form-data; name="bcc"', $reqDataString);
+        $this->assertTextContains('Content-Disposition: form-data; name="h:Reply-To"', $reqDataString);
         $this->assertTextContains('from@example.com <from@example.com>', $reqDataString);
         $this->assertTextContains('to@example.com <to@example.com>', $reqDataString);
         $this->assertTextContains('ccbar@example.com <ccbar@example.com>', $reqDataString);
         $this->assertTextContains('John <ccjohn@example.com>', $reqDataString);
         $this->assertTextContains('bccbar@example.com <bccbar@example.com>', $reqDataString);
         $this->assertTextContains('John <bccjohn@example.com>', $reqDataString);
+        $this->assertTextContains('John <replyto@example.com>', $reqDataString);
+    }
+
+    public function testCustomHeaders()
+    {
+        $this->_setEmailConfig();
+        $email = new Email();
+        $email->setProfile(['transport' => 'mailgun']);
+        $res = $email->setFrom('from@example.com')
+            ->setTo('to@example.com')
+            ->setHeaders(['h:X-MyHeader' => 'YouGotIt'])
+            ->setSubject('Email from CakePHP Mailgun plugin')
+            ->send('Hello there, <br> This is an email from CakePHP Mailgun Email plugin.');
+
+        $reqData = $res['reqData'];
+        $boundary = $reqData->boundary();
+        $reqDataString = (string)$reqData;
+
+        $this->assertNotEmpty($reqDataString);
+        $this->assertStringStartsWith("--$boundary", $reqDataString);
+        $this->assertTextContains('Content-Disposition: form-data; name="h:X-MyHeader"', $reqDataString);
+        $this->assertTextContains('YouGotIt', $reqDataString);
     }
 
     public function testAttachments()
@@ -116,7 +140,7 @@ class MailgunTransportTest extends TestCase
             ->setTo('to@example.com')
             ->setAttachments([
                 'logo.png' => ['file' => TESTS . DS . 'assets' . DS . 'logo.png', 'contentId' => 'logo.png'],
-                'cake.power.gif' => ['file' => TESTS . DS . 'assets' . DS . 'cake.power.gif']
+                'cake.power.gif' => ['file' => TESTS . DS . 'assets' . DS . 'cake.power.gif'],
             ])
             ->setSubject('Email from CakePHP Mailgun plugin')
             ->send('Hello there, <br> This is an email from CakePHP Mailgun Email plugin.');
