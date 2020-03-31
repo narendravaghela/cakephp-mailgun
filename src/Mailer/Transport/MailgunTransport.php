@@ -221,6 +221,10 @@ class MailgunTransport extends AbstractTransport
             $this->_formData->add('from', sprintf("%s <%s>", key($from), key($from)));
         }
 
+        foreach ($message->getSender() as $senderEmail => $senderName) {
+            $this->_formData->add('h:Sender', sprintf("%s <%s>", $senderName, $senderEmail));
+        }
+
         foreach ($message->getTo() as $toEmail => $toName) {
             $this->_formData->add('to', sprintf("%s <%s>", $toName, $toEmail));
         }
@@ -231,6 +235,10 @@ class MailgunTransport extends AbstractTransport
 
         foreach ($message->getBcc() as $bccEmail => $bccName) {
             $this->_formData->add('bcc', sprintf("%s <%s>", $bccName, $bccEmail));
+        }
+
+        foreach ($message->getReplyTo() as $replyToEmail => $replyToName) {
+            $this->_formData->add('h:Reply-To', sprintf("%s <%s>", $replyToName, $replyToEmail));
         }
     }
 

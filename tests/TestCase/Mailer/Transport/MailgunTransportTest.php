@@ -51,11 +51,9 @@ class MailgunTransportTest extends TestCase
             ->setTo('to@example.com')
             ->addCC(['ccbar@example.com', 'ccjohn@example.com' => 'John'])
             ->addBcc(['bccbar@example.com', 'bccjohn@example.com' => 'John'])
+            ->setReplyTo(['replyto@example.com' => 'John'])
+            ->setSender(['sender@example.com' => 'John'])
             ->setEmailFormat('both')
-            ->addHeaders([
-                'h:Reply-To' => 'replyto@example.com',
-                'Sent-From' => 'sentfrom@example.com',
-            ])
             ->setSubject('Email from CakePHP Mailgun plugin');
         $this->MailgunTransport->send($message);
 
@@ -70,15 +68,15 @@ class MailgunTransportTest extends TestCase
         $this->assertTextContains('Content-Disposition: form-data; name="cc"', $reqDataString);
         $this->assertTextContains('Content-Disposition: form-data; name="bcc"', $reqDataString);
         $this->assertTextContains('Content-Disposition: form-data; name="h:Reply-To"', $reqDataString);
-        $this->assertTextContains('Content-Disposition: form-data; name="h:Sent-From"', $reqDataString);
+        $this->assertTextContains('Content-Disposition: form-data; name="h:Sender"', $reqDataString);
         $this->assertTextContains('from@example.com <from@example.com>', $reqDataString);
         $this->assertTextContains('to@example.com <to@example.com>', $reqDataString);
         $this->assertTextContains('ccbar@example.com <ccbar@example.com>', $reqDataString);
         $this->assertTextContains('John <ccjohn@example.com>', $reqDataString);
         $this->assertTextContains('bccbar@example.com <bccbar@example.com>', $reqDataString);
         $this->assertTextContains('John <bccjohn@example.com>', $reqDataString);
-        $this->assertTextContains('replyto@example.com', $reqDataString);
-        $this->assertTextContains('sentfrom@example.com', $reqDataString);
+        $this->assertTextContains('John <replyto@example.com>', $reqDataString);
+        $this->assertTextContains('John <sender@example.com>', $reqDataString);
     }
 
     public function testAttachments()
@@ -103,6 +101,29 @@ class MailgunTransportTest extends TestCase
         $this->assertNotEmpty($reqDataString);
         $this->assertStringStartsWith("--$boundary", $reqDataString);
         $this->assertStringEndsWith("--$boundary--", rtrim($reqDataString));
+    }
+
+    public function testCustomHeaders()
+    {
+        $this->MailgunTransport = $this->getMockBuilder('Mailgun\Mailer\Transport\MailgunTransport')->onlyMethods(['_sendEmail', '_reset'])->getMock();
+        $this->MailgunTransport->expects($this->once())->method('_reset');
+        $this->MailgunTransport->expects($this->once())->method('_sendEmail')->willReturn([]);
+        $this->MailgunTransport->setConfig(['apiKey' => '123', 'domain' => 'example.com']);
+        $message = new Message();
+        $res = $message->setFrom('from@example.com')
+            ->setTo('to@example.com')
+            ->setHeaders(['h:X-MyHeader' => 'YouGotIt'])
+            ->setSubject('Email from CakePHP Mailgun plugin');
+        $this->MailgunTransport->send($message);
+
+        $reqData = $reqData = $this->MailgunTransport->getRequestData();
+        $boundary = $reqData->boundary();
+        $reqDataString = (string)$reqData;
+
+        $this->assertNotEmpty($reqDataString);
+        $this->assertStringStartsWith("--$boundary", $reqDataString);
+        $this->assertTextContains('Content-Disposition: form-data; name="h:X-MyHeader"', $reqDataString);
+        $this->assertTextContains('YouGotIt', $reqDataString);
     }
 
     public function testRawBinaryAttachments()
