@@ -355,8 +355,8 @@ class MailgunTransport extends AbstractTransport
             $this->_formData->add('from', sprintf("%s <%s>", key($from), key($from)));
         }
 
-        foreach ($email->getSender() as $toEmail => $toName) {
-            $this->_formData->add('h:Sender', sprintf("%s <%s>", $toName, $toEmail));
+        foreach ($email->getSender() as $senderEmail => $senderName) {
+            $this->_formData->add('h:Sender', sprintf("%s <%s>", $senderName, $senderEmail));
         }
 
         foreach ($email->getTo() as $toEmail => $toName) {
