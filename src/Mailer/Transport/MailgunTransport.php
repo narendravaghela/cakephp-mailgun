@@ -150,9 +150,9 @@ class MailgunTransport extends AbstractTransport
         if (!empty($attachments)) {
             foreach ($attachments as $fileName => $attachment) {
                 if (empty($attachment['contentId'])) {
-                    $file = $this->_addFile('attachment', $attachment, $fileName);
+                    $file = $this->_addFile('attachment', $attachment, (string)$fileName);
                 } else {
-                    $file = $this->_addFile('inline', $attachment, $fileName);
+                    $file = $this->_addFile('inline', $attachment, (string)$fileName);
                     $file->contentId($attachment['contentId']);
                 }
                 $file->disposition('attachment');
@@ -191,7 +191,7 @@ class MailgunTransport extends AbstractTransport
     /**
      * Returns the parameters for API request.
      *
-     * @return array
+     * @return \Cake\Http\Client\FormData
      */
     public function getRequestData()
     {
@@ -355,6 +355,10 @@ class MailgunTransport extends AbstractTransport
             $this->_formData->add('from', sprintf("%s <%s>", key($from), key($from)));
         }
 
+        foreach ($email->getSender() as $toEmail => $toName) {
+            $this->_formData->add('h:Sender', sprintf("%s <%s>", $toName, $toEmail));
+        }
+
         foreach ($email->getTo() as $toEmail => $toName) {
             $this->_formData->add('to', sprintf("%s <%s>", $toName, $toEmail));
         }
@@ -365,6 +369,10 @@ class MailgunTransport extends AbstractTransport
 
         foreach ($email->getBcc() as $bccEmail => $bccName) {
             $this->_formData->add('bcc', sprintf("%s <%s>", $bccName, $bccEmail));
+        }
+
+        foreach ($email->getReplyTo() as $replyToEmail => $replyToName) {
+            $this->_formData->add('h:Reply-To', sprintf("%s <%s>", $replyToName, $replyToEmail));
         }
     }
 
