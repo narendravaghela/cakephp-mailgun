@@ -327,4 +327,14 @@ class MailgunTransport extends AbstractTransport
             }
         }
     }
+
+    /**
+     * clone
+     *
+     * @return void
+     */
+    public function __clone()
+    {
+        $this->_reset();
+    }
 }
