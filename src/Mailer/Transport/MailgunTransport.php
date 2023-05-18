@@ -35,7 +35,7 @@ class MailgunTransport extends AbstractTransport
      *
      * @var array
      */
-    protected $_defaultConfig = [
+    protected array $_defaultConfig = [
         'apiEndpoint' => 'https://api.mailgun.net/v3',
         'domain' => '',
         'apiKey' => '',
@@ -46,7 +46,7 @@ class MailgunTransport extends AbstractTransport
      *
      * @var array
      */
-    protected $_allowedOptions = [
+    protected array $_allowedOptions = [
         'tag',
         'dkim',
         'deliverytime',
@@ -61,12 +61,12 @@ class MailgunTransport extends AbstractTransport
     /**
      * @var string Mailgun header prefix
      */
-    protected $_mailgunHeaderPrefix = 'X-Mailgun';
+    protected string $_mailgunHeaderPrefix = 'X-Mailgun';
 
     /**
      * @var array Valid mailgun headers
      */
-    protected $_mailgunHeaders = [
+    protected array $_mailgunHeaders = [
         'X-Mailgun-Tag' => 'tag',
         'X-Mailgun-Dkim' => 'dkim',
         'X-Mailgun-Deliver-By' => 'deliverytime',
@@ -83,40 +83,40 @@ class MailgunTransport extends AbstractTransport
      *
      * @var string
      */
-    protected $_optionPrefix = 'o:';
+    protected string $_optionPrefix = 'o:';
 
     /**
      * Prefix for setting custom headers
      *
      * @var string
      */
-    protected $_customHeaderPrefix = 'h:';
+    protected string $_customHeaderPrefix = 'h:';
 
     /**
      * Prefix for variables
      *
      * @var string
      */
-    protected $_varPrefix = 'v:';
+    protected string $_varPrefix = 'v:';
 
     /**
      * FormData object
      *
      * @var \Cake\Http\Client\FormData
      */
-    protected $_formData;
+    protected FormData $_formData;
 
     /**
      * @var \Cake\Http\Client HTTP Client to use
      */
-    public $Client;
+    public Client $Client;
 
     /**
      * Constructor
      *
      * @param array $config Configuration options.
      */
-    public function __construct($config = [])
+    public function __construct(array $config = [])
     {
         parent::__construct($config);
         $this->_formData = new FormData();
@@ -185,7 +185,7 @@ class MailgunTransport extends AbstractTransport
      * @param string $fileName Desired filename of the attachment
      * @return \Cake\Http\Client\FormDataPart
      */
-    protected function _addFile($partName, $attachment, $fileName = ''): \Cake\Http\Client\FormDataPart
+    protected function _addFile(string $partName, array $attachment, string $fileName = ''): \Cake\Http\Client\FormDataPart
     {
         if (isset($attachment['file'])) {
             $file = $this->_formData->addFile($partName, fopen($attachment['file'], 'r'));
@@ -251,9 +251,9 @@ class MailgunTransport extends AbstractTransport
     /**
      * Make an API request to send email
      *
-     * @return mixed JSON Response from Mailgun API
+     * @return array JSON Response from Mailgun API
      */
-    protected function _sendEmail()
+    protected function _sendEmail(): array
     {
         $response = $this->Client->post(
             "{$this->getConfig('apiEndpoint')}/{$this->getConfig('domain')}/messages",
@@ -299,7 +299,7 @@ class MailgunTransport extends AbstractTransport
     {
         $customHeaders = $message->getHeaders(['_headers']);
         foreach ($customHeaders as $header => $value) {
-            if (strpos($header, $this->_mailgunHeaderPrefix) === 0 && !empty($value)) {
+            if (str_starts_with($header, $this->_mailgunHeaderPrefix) && !empty($value)) {
                 if ($header === $this->_mailgunHeaderPrefix . '-Recipient-Variables') {
                     $this->_formData->add("recipient-variables", $value);
                 } elseif ($header === $this->_mailgunHeaderPrefix . '-Variables') {
@@ -320,7 +320,7 @@ class MailgunTransport extends AbstractTransport
                     $var = $this->_mailgunHeaders[$header];
                     $this->_formData->add("{$this->_optionPrefix}$var", $value);
                 }
-            } elseif (strpos($header, $this->_customHeaderPrefix) === 0 && !empty($value)) {
+            } elseif (str_starts_with($header, $this->_customHeaderPrefix) && !empty($value)) {
                 $this->_formData->add($header, $value);
             } else {
                 $this->_formData->add($this->_customHeaderPrefix . $header, $value);

@@ -12,7 +12,7 @@
 
 This plugin provides email delivery using [Mailgun API](https://www.mailgun.com/).
 
-This branch is for use with **CakePHP 4.0+**. For details see [version map](https://github.com/narendravaghela/cakephp-mailgun/wiki) 
+This branch is for use with **CakePHP 5.0+**. For details see [version map](https://github.com/narendravaghela/cakephp-mailgun/wiki) 
 
 ## Installation and Usage
 

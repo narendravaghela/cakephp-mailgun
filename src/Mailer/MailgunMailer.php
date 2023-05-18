@@ -28,7 +28,7 @@ class MailgunMailer extends Mailer
      *
      * @param array|string|null $config Array of configs, or string to load configs from app.php
      */
-    public function __construct($config = null)
+    public function __construct(array|string|null $config = null)
     {
         parent::__construct($config);
 

@@ -17,17 +17,17 @@ declare(strict_types=1);
 
 namespace Mailgun\Mailer\Exception;
 
-use Cake\Core\Exception\Exception;
+use Cake\Core\Exception\CakeException;
 
 /**
  * Mailgun Api exception
  *
  * - used when an api key cannot be found.
  */
-class MailgunApiException extends Exception
+class MailgunApiException extends CakeException
 {
     /**
      * {@inheritDoc}
      */
-    protected $_messageTemplate = '%s';
+    protected string $_messageTemplate = '%s';
 }

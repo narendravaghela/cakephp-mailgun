@@ -8,6 +8,9 @@ declare(strict_types=1);
  * has been installed as a dependency of the plugin, or the plugin is itself
  * installed as a dependency of an application.
  */
+
+use Cake\Mailer\TransportFactory;
+
 $findRoot = function ($root) {
     do {
         $lastRoot = $root;
@@ -32,3 +35,10 @@ if (file_exists($root . '/config/bootstrap.php')) {
     return;
 }
 require $root . '/vendor/cakephp/cakephp/tests/bootstrap.php';
+
+TransportFactory::setConfig('mailgun', [
+    'className' => 'Mailgun.Mailgun',
+    'apiEndpoint' => 'https://api.mailgun.net/v3', // optional, api endpoint
+    'domain' => 'XXXXXXXXXXXXXXXXXX.mailgun.org', // your domain
+    'apiKey' => 'XXXXXXXXXXXXXXXXXX'
+]);

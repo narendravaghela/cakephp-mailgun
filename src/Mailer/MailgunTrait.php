@@ -17,8 +17,9 @@ declare(strict_types=1);
 
 namespace Mailgun\Mailer;
 
+use DateTime;
 use Mailgun\Mailer\Exception\MailgunApiException;
-use Mailgun\Plugin;
+use Mailgun\MailgunPlugin;
 
 /**
  * Trait MailgunTrait
@@ -43,12 +44,12 @@ trait MailgunTrait
      * @see https://documentation.mailgun.com/en/latest/api-intro.html#date-format
      *
      */
-    public function deliverBy($time)
+    public function deliverBy(DateTime $time): static
     {
-        if ($time->diff(new \DateTime())->days > 3) {
+        if ($time->diff(new DateTime())->days > 3) {
             throw new MailgunApiException('Delivery date can only be max of 3 days in the future.');
         }
-        $this->message->addHeaders(['X-Mailgun-Deliver-By' => $time->format(Plugin::TIMEFORMAT)]);
+        $this->message->addHeaders(['X-Mailgun-Deliver-By' => $time->format(MailgunPlugin::TIMEFORMAT)]);
 
         return $this;
     }
@@ -60,7 +61,7 @@ trait MailgunTrait
      *
      * @return $this
      */
-    public function enableDkim($enable = true)
+    public function enableDkim(bool $enable = true): static
     {
         $this->message->addHeaders(['X-Mailgun-Dkim' => $enable ? 'yes' : 'no']);
 
@@ -76,7 +77,7 @@ trait MailgunTrait
      *
      * @see https://documentation.mailgun.com/en/latest/user_manual.html#tracking-messages
      */
-    public function enableTracking($track = true)
+    public function enableTracking(bool $track = true): static
     {
         $this->message->addHeaders(['X-Mailgun-Track' => $track ? 'yes' : 'no']);
 
@@ -93,7 +94,7 @@ trait MailgunTrait
      *
      * @see https://documentation.mailgun.com/en/latest/user_manual.html#tls-sending
      */
-    public function requireTls($tls = false)
+    public function requireTls(bool $tls = false): static
     {
         $this->message->addHeaders(['X-Mailgun-Require-TLS' => $tls ? 'true' : 'false']);
 
@@ -109,7 +110,7 @@ trait MailgunTrait
      *
      * @see https://documentation.mailgun.com/en/latest/user_manual.html#manual-customdata
      */
-    public function setMailgunVars(array $vars)
+    public function setMailgunVars(array $vars): static
     {
         $this->message->addHeaders(['X-Mailgun-Variables' => $vars]);
 
@@ -125,7 +126,7 @@ trait MailgunTrait
      *
      * @see https://documentation.mailgun.com/en/latest/user_manual.html#batch-sending
      */
-    public function setRecipientVars(array $vars)
+    public function setRecipientVars(array $vars): static
     {
         $this->message->addHeaders(['X-Mailgun-Recipient-Variables' => json_encode($vars)]);
 
@@ -143,7 +144,7 @@ trait MailgunTrait
      *
      * @see https://documentation.mailgun.com/en/latest/user_manual.html#tagging
      */
-    public function setTags($tags)
+    public function setTags(array|string $tags): static
     {
         if (is_string($tags)) {
             $tags = explode(',', $tags);
@@ -167,7 +168,7 @@ trait MailgunTrait
      *
      * @see https://documentation.mailgun.com/en/latest/user_manual.html#tls-sending
      */
-    public function skipVerification($verify = false)
+    public function skipVerification(bool $verify = false): static
     {
         $this->message->addHeaders(['X-Mailgun-Skip-Verification' => $verify ? 'true' : 'false']);
 
@@ -183,7 +184,7 @@ trait MailgunTrait
      *
      * @see https://documentation.mailgun.com/en/latest/user_manual.html#manual-testmode
      */
-    public function testMode($drop = true)
+    public function testMode(bool $drop = true): static
     {
         $this->message->addHeaders(['X-Mailgun-Drop-Message' => $drop ? 'yes' : 'no']);
 
@@ -199,7 +200,7 @@ trait MailgunTrait
      *
      * @see https://documentation.mailgun.com/en/latest/user_manual.html#tracking-messages
      */
-    public function trackClicks($track = null)
+    public function trackClicks(bool $track = null): static
     {
         if ($track === null) {
             $this->message->addHeaders(['X-Mailgun-Track-Clicks' => 'htmlonly']);
@@ -219,7 +220,7 @@ trait MailgunTrait
      *
      * @see https://documentation.mailgun.com/en/latest/user_manual.html#tracking-messages
      */
-    public function trackOpens($track = false)
+    public function trackOpens(bool $track = false): static
     {
         $this->message->addHeaders(['X-Mailgun-Track-Opens' => $track ? 'yes' : 'no']);
 
