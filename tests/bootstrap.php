@@ -40,5 +40,5 @@ TransportFactory::setConfig('mailgun', [
     'className' => 'Mailgun.Mailgun',
     'apiEndpoint' => 'https://api.mailgun.net/v3', // optional, api endpoint
     'domain' => 'XXXXXXXXXXXXXXXXXX.mailgun.org', // your domain
-    'apiKey' => 'XXXXXXXXXXXXXXXXXX'
+    'apiKey' => 'XXXXXXXXXXXXXXXXXX',
 ]);
