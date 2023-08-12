@@ -11,10 +11,7 @@ use Mailgun\MailgunPlugin;
 
 class MailgunTraitTest extends TestCase
 {
-    /**
-     * @var MailgunMailer
-     */
-    public $TestMailer;
+    public MailgunMailer $TestMailer;
 
     public function setUp(): void
     {
@@ -25,7 +22,7 @@ class MailgunTraitTest extends TestCase
 
     public function testDeliverBy(): void
     {
-        $time = new \DateTime();
+        $time = new DateTime();
         $result = $this->TestMailer->deliverBy($time);
         $this->assertInstanceOf('Cake\Mailer\Mailer', $result);
 
@@ -212,7 +209,7 @@ class MailgunTraitTest extends TestCase
 
     public function testTrackOpenFalse(): void
     {
-        $this->TestMailer->trackOpens(false);
+        $this->TestMailer->trackOpens();
 
         $headers = $this->TestMailer->getMessage()->getHeaders(['X-Mailgun-Track-Opens']);
         $expected = 'no';

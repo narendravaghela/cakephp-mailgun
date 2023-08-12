@@ -185,7 +185,7 @@ class MailgunTransport extends AbstractTransport
      * @param string $fileName Desired filename of the attachment
      * @return \Cake\Http\Client\FormDataPart
      */
-    protected function _addFile(string $partName, array $attachment, string $fileName = ''): \Cake\Http\Client\FormDataPart
+    protected function _addFile(string $partName, array $attachment, string $fileName = ''): FormDataPart
     {
         if (isset($attachment['file'])) {
             $file = $this->_formData->addFile($partName, fopen($attachment['file'], 'r'));

@@ -22,13 +22,11 @@ use Cake\Http\Client\Response;
 use Cake\Mailer\Message;
 use Cake\TestSuite\TestCase;
 use Mailgun\Mailer\Transport\MailgunTransport;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class MailgunTransportTest extends TestCase
 {
-    /**
-     * @var MailgunTransport
-     */
-    public $MailgunTransport;
+    public MailgunTransport|MockObject $MailgunTransport;
 
     public function setUp(): void
     {
