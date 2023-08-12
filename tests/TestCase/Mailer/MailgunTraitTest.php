@@ -7,7 +7,7 @@ use Cake\TestSuite\TestCase;
 use DateInterval;
 use DateTime;
 use Mailgun\Mailer\MailgunMailer;
-use Mailgun\Plugin;
+use Mailgun\MailgunPlugin;
 
 class MailgunTraitTest extends TestCase
 {
@@ -30,7 +30,7 @@ class MailgunTraitTest extends TestCase
         $this->assertInstanceOf('Cake\Mailer\Mailer', $result);
 
         $headers = $this->TestMailer->getMessage()->getHeaders(['X-Mailgun-Deliver-By']);
-        $expected = $time->format(Plugin::TIMEFORMAT);
+        $expected = $time->format(MailgunPlugin::TIMEFORMAT);
 
         $this->assertEquals($expected, $headers['X-Mailgun-Deliver-By']);
     }
@@ -40,7 +40,7 @@ class MailgunTraitTest extends TestCase
         $this->expectException('Mailgun\Mailer\Exception\MailgunApiException');
         $this->expectExceptionMessage('Delivery date can only be max of 3 days in the future.');
 
-        $time = (new DateTime())->add(new DateInterval('P4D'));
+        $time = (new DateTime())->add(new DateInterval('P5D'));
         $this->TestMailer->deliverBy($time);
     }
 

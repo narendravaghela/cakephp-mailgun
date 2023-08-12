@@ -46,15 +46,13 @@ And create new delivery profile in `Email` settings.
 ```
 
 ## Usage
-This plugin is compromised of 4 separate classes. 
+This plugin is compromised of 4 separate classes.
 
 `Mailgun\Mailer\MailgunTransport` Transport that converts the CakePHP message and sends it via the Mailgun API.
 
 `Mailgun\Mailer\MailgunTrait` Trait that adds convenience methods for setting additional options that you can use in your custom mailer.
 
 `Mailgun\Mailer\MailgunMailer` Mailer that adds the MailgunTrait to a `Cake\Mailer\Mailer` class. You can either extend this class or use the MailgunTrait.
-
-`Mailgun\Mailer\MailgunEmail` **DEPRECATED** Email that adds the MailgunTrait to a `Cake\Mailer\Email` class. 
 
 ### Basic Usage
 Once you've configured your transport you can begin sending emails by calling `Cake\Mailer\Mailer::setTransport('mailgun')` or use the provided MailgunEmail or MailgunMailer. To set additional options when using Mailgun you may manually set the headers with `Cake\Mailer\Mailer::addHeaders(['X-Mailgun-Tag' => ['welcome', 'newuser'])`
@@ -183,7 +181,7 @@ $email->setFrom(['you@yourdomain.com' => 'CakePHP Mailgun'])
 ```
 
 #### DKIM signature
-You can enable/disable DKIM signature validation. Use `MailgunTrait->enableDkim()` 
+You can enable/disable DKIM signature validation. Use `MailgunTrait->enableDkim()`
 
 ```php
 $email = new MailgunMailer();

@@ -13,26 +13,19 @@ declare(strict_types=1);
  * @license   https://opensource.org/licenses/mit-license.php MIT License
  * @link      https://github.com/narendravaghela/cakephp-mailgun
  * @since     3.0.0
- * @deprecated 5.0.0 This class will be removed in CakePHP 5.0 and Mailgun 6.0. Use MailgunTrait on your custom Mailer class
  */
 
-namespace Mailgun\Mailer;
+namespace Mailgun;
 
-use Cake\Mailer\Email as CoreEmail;
+use Cake\Core\BasePlugin;
 
-class MailgunEmail extends CoreEmail
+/**
+ * Plugin for Mailgun
+ */
+class MailgunPlugin extends BasePlugin
 {
-    use MailgunTrait;
-
     /**
-     * Constructor
-     *
-     * @param array $config Configuration options.
+     * @var string Timeformat to use
      */
-    public function __construct($config = null)
-    {
-        parent::__construct($config);
-
-        $this->setProfile(['transport' => 'mailgun']);
-    }
+    public const TIMEFORMAT = 'D, d M Y H:i:s O';
 }
