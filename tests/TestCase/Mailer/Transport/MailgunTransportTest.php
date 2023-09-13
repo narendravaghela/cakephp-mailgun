@@ -108,7 +108,7 @@ class MailgunTransportTest extends TestCase
         $this->MailgunTransport->expects($this->once())->method('_sendEmail')->willReturn([]);
         $this->MailgunTransport->setConfig(['apiKey' => '123', 'domain' => 'example.com']);
         $message = new Message();
-        $res = $message->setFrom('from@example.com')
+        $message->setFrom('from@example.com')
             ->setTo('to@example.com')
             ->setHeaders(['h:X-MyHeader' => 'YouGotIt'])
             ->setSubject('Email from CakePHP Mailgun plugin');

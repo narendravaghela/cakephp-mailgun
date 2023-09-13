@@ -27,7 +27,7 @@ use Cake\Core\Exception\CakeException;
 class MailgunApiException extends CakeException
 {
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     protected string $_messageTemplate = '%s';
 }

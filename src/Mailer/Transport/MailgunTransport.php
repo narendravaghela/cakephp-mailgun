@@ -33,7 +33,7 @@ class MailgunTransport extends AbstractTransport
     /**
      * Default config for this class
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected array $_defaultConfig = [
         'apiEndpoint' => 'https://api.mailgun.net/v3',
@@ -127,9 +127,7 @@ class MailgunTransport extends AbstractTransport
      * Send mail
      *
      * @param \Cake\Mailer\Message $message Cake Email
-     *
-     * @return array An array with api response and email parameters
-     *
+     * @return array{headers: string, message: string} An array with api response and email parameters
      * @throws \Mailgun\Mailer\Exception\MailgunApiException If api key, domain, or from address is not set
      */
     public function send(Message $message): array
@@ -169,6 +167,7 @@ class MailgunTransport extends AbstractTransport
         }
 
         try {
+            /** @var array{headers: string, message: string} */
             return $this->_sendEmail();
         } catch (MailgunApiException $e) {
             throw $e;
@@ -222,29 +221,29 @@ class MailgunTransport extends AbstractTransport
             throw new MailgunApiException('Missing from email address.');
         }
         if (key($from) != $from[key($from)]) {
-            $this->_formData->add('from', sprintf("%s <%s>", $from[key($from)], key($from)));
+            $this->_formData->add('from', sprintf('%s <%s>', $from[key($from)], key($from)));
         } else {
-            $this->_formData->add('from', sprintf("%s <%s>", key($from), key($from)));
+            $this->_formData->add('from', sprintf('%s <%s>', key($from), key($from)));
         }
 
         foreach ($message->getSender() as $senderEmail => $senderName) {
-            $this->_formData->add('h:Sender', sprintf("%s <%s>", $senderName, $senderEmail));
+            $this->_formData->add('h:Sender', sprintf('%s <%s>', $senderName, $senderEmail));
         }
 
         foreach ($message->getTo() as $toEmail => $toName) {
-            $this->_formData->add('to', sprintf("%s <%s>", $toName, $toEmail));
+            $this->_formData->add('to', sprintf('%s <%s>', $toName, $toEmail));
         }
 
         foreach ($message->getCc() as $ccEmail => $ccName) {
-            $this->_formData->add('cc', sprintf("%s <%s>", $ccName, $ccEmail));
+            $this->_formData->add('cc', sprintf('%s <%s>', $ccName, $ccEmail));
         }
 
         foreach ($message->getBcc() as $bccEmail => $bccName) {
-            $this->_formData->add('bcc', sprintf("%s <%s>", $bccName, $bccEmail));
+            $this->_formData->add('bcc', sprintf('%s <%s>', $bccName, $bccEmail));
         }
 
         foreach ($message->getReplyTo() as $replyToEmail => $replyToName) {
-            $this->_formData->add('h:Reply-To', sprintf("%s <%s>", $replyToName, $replyToEmail));
+            $this->_formData->add('h:Reply-To', sprintf('%s <%s>', $replyToName, $replyToEmail));
         }
     }
 
@@ -292,7 +291,6 @@ class MailgunTransport extends AbstractTransport
      * Process the Email headers and covert them to mailgun form parts
      *
      * @param \Cake\Mailer\Message $message Email to work with
-     *
      * @return void
      */
     protected function _processHeaders(Message $message): void
@@ -301,7 +299,7 @@ class MailgunTransport extends AbstractTransport
         foreach ($customHeaders as $header => $value) {
             if (str_starts_with($header, $this->_mailgunHeaderPrefix) && !empty($value)) {
                 if ($header === $this->_mailgunHeaderPrefix . '-Recipient-Variables') {
-                    $this->_formData->add("recipient-variables", $value);
+                    $this->_formData->add('recipient-variables', $value);
                 } elseif ($header === $this->_mailgunHeaderPrefix . '-Variables') {
                     foreach ($value as $k => $v) {
                         if (is_array($v)) {

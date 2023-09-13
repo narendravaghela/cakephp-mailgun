@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="3"
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    findUnusedBaselineEntry="true"
+    findUnusedCode="false"
+>
+    <projectFiles>
+        <directory name="src" />
+        <ignoreFiles>
+            <directory name="vendor" />
+        </ignoreFiles>
+    </projectFiles>
+    <issueHandlers>
+        <InternalMethod>
+            <errorLevel type="suppress">
+                <file name="src/Mailer/Transport/MailgunTransport.php" />
+            </errorLevel>
+        </InternalMethod>
+        <InternalClass>
+            <errorLevel type="suppress">
+                <file name="src/Mailer/Transport/MailgunTransport.php" />
+            </errorLevel>
+        </InternalClass>
+        <InvalidIterator>
+            <errorLevel type="suppress">
+                <file name="src/Mailer/Transport/MailgunTransport.php" />
+            </errorLevel>
+        </InvalidIterator>
+        <RedundantCondition>
+            <errorLevel type="suppress">
+                <file name="src/Mailer/Transport/MailgunTransport.php" />
+            </errorLevel>
+        </RedundantCondition>
+    </issueHandlers>
+</psalm>
