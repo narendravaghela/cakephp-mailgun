@@ -16,7 +16,7 @@ This branch is for use with **CakePHP 5.0+**. For details see [version map](http
 
 ## Installation and Usage
 
-See [documentation](https://github.com/narendravaghela/cakephp-mailgun/tree/master/docs)
+See [documentation](https://github.com/narendravaghela/cakephp-mailgun/tree/6.x/docs)
 
 ## Contributing
 You can [fork](https://help.github.com/articles/fork-a-repo) the project, add features, and send [pull requests](https://help.github.com/articles/using-pull-requests) or open [issues](https://github.com/narendravaghela/cakephp-mailgun/issues).
