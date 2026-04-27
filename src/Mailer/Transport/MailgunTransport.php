@@ -127,7 +127,8 @@ class MailgunTransport extends AbstractTransport
      * Send mail
      *
      * @param \Cake\Mailer\Message $message Cake Email
-     * @return array{headers: string, message: string} An array with api response and email parameters
+     * @return array<string, mixed>
+     * @phpstan-return array{headers: string, message: string, apiResponse: array<mixed>, responseCode: int, reqData?: \Cake\Http\Client\FormData}
      * @throws \Mailgun\Mailer\Exception\MailgunApiException If api key, domain, or from address is not set
      */
     public function send(Message $message): array
@@ -167,7 +168,6 @@ class MailgunTransport extends AbstractTransport
         }
 
         try {
-            /** @var array{headers: string, message: string} */
             return $this->_sendEmail();
         } catch (MailgunApiException $e) {
             throw $e;
@@ -187,7 +187,11 @@ class MailgunTransport extends AbstractTransport
     protected function _addFile(string $partName, array $attachment, string $fileName = ''): FormDataPart
     {
         if (isset($attachment['file'])) {
-            $file = $this->_formData->addFile($partName, fopen($attachment['file'], 'r'));
+            $handle = fopen($attachment['file'], 'r');
+            if ($handle === false) {
+                throw new MailgunApiException("Could not open attachment file: {$attachment['file']}");
+            }
+            $file = $this->_formData->addFile($partName, $handle);
         } else {
             $file = $this->_formData->newPart($partName, (string)base64_decode($attachment['data']));
             $file->type($attachment['mimetype']);
@@ -260,7 +264,7 @@ class MailgunTransport extends AbstractTransport
             [
                 'auth' => ['username' => 'api', 'password' => $this->getConfig('apiKey')],
                 'headers' => ['Content-Type' => $this->_formData->contentType()],
-            ]
+            ],
         );
 
         if (!$response->isSuccess()) {
@@ -268,6 +272,8 @@ class MailgunTransport extends AbstractTransport
         }
 
         $result = [];
+        $result['headers'] = '';
+        $result['message'] = '';
         $result['apiResponse'] = $response->getJson();
         $result['responseCode'] = $response->getStatusCode();
         if (Configure::read('debug')) {
@@ -310,10 +316,7 @@ class MailgunTransport extends AbstractTransport
                     }
                 } elseif ($header === $this->_mailgunHeaderPrefix . '-Tag') {
                     $var = $this->_mailgunHeaders[$header];
-                    if (is_string($value)) {
-                        $value = json_decode($value);
-                    }
-                    $this->_formData->add("{$this->_optionPrefix}$var", $value);
+                    $this->_formData->add("{$this->_optionPrefix}$var", json_decode($value));
                 } else {
                     $var = $this->_mailgunHeaders[$header];
                     $this->_formData->add("{$this->_optionPrefix}$var", $value);
